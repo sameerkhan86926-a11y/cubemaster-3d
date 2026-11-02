@@ -1,0 +1,21 @@
+{
+  "name": "CubeMaster 3D - Rubik's Cube Solver",
+  "short_name": "CubeMaster",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0812",
+  "theme_color": "#0b0812",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "./apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
