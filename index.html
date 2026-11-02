@@ -4,15 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b0812">
+
 <title>CubeMaster 3D - Rubik's Cube Solver</title>
+
 <link rel="stylesheet" href="style.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
 </head>
 
 <body>
 
 <header class="header">
+
     <div class="logo">
         <div class="logo-icon">C</div>
+
         <div>
             <h2>CubeMaster<span>3D</span></h2>
             <small>REAL CUBE SOLVER</small>
@@ -23,83 +36,160 @@
         <span class="status-dot"></span>
         <span>3×3 SOLVER</span>
     </div>
+
 </header>
 
 
 <main class="container">
 
     <section class="hero">
+
         <span class="badge">INTERACTIVE RUBIK'S CUBE SOLVER</span>
+
         <h1>Solve Your <span>Real Cube.</span></h1>
+
         <p>
             Enter your real cube colours, calculate the solution
-            and follow the 3D step-by-step guide.
+            and follow every move with the interactive 3D guide.
         </p>
+
     </section>
 
 
     <section class="instructions">
+
         <div class="instruction-number">01</div>
+
         <div>
             <h3>Set Your Cube Colours</h3>
+
             <p>
-                Apne real cube ko dekho. 3D cube ko rotate karo,
-                sticker par tap karo aur uska colour select karo.
+                Rotate the 3D cube, select a colour and tap any sticker.
+                All 54 stickers, including centre stickers, are editable.
             </p>
         </div>
+
     </section>
 
 
+    <!-- MAIN WORKSPACE -->
+
     <div class="workspace">
+
+
+        <!-- LEFT: 3D CUBE -->
 
         <section class="cube-section">
 
             <div class="cube-topbar">
+
                 <div>
                     <h3>Your 3D Cube</h3>
-                    <p id="cube-mode-text">Tap stickers to change their colours</p>
+
+                    <p id="cube-mode-text">
+                        Tap stickers to change their colours
+                    </p>
                 </div>
+
                 <span class="live-badge">● LIVE 3D</span>
+
             </div>
+
 
             <div id="cube-container">
-                <div id="loading">Loading 3D Cube...</div>
+
+                <div id="loading">
+                    Loading 3D Cube...
+                </div>
+
             </div>
+
 
             <div class="viewer-controls">
-                <button onclick="rotateView('left')">↶ Rotate</button>
-                <button onclick="rotateView('right')">Rotate ↷</button>
-                <button onclick="resetView()">Reset View</button>
+
+                <button onclick="rotateView('left')">
+                    ↶ Rotate
+                </button>
+
+                <button onclick="rotateView('right')">
+                    Rotate ↷
+                </button>
+
+                <button onclick="resetView()">
+                    Reset View
+                </button>
+
             </div>
 
+
             <div class="cube-info">
+
                 <div>
-                    <small>COLOURED STICKERS</small>
-                    <strong id="sticker-count">0 / 48</strong>
+                    <small>EDITED STICKERS</small>
+                    <strong id="sticker-count">0 / 54</strong>
                 </div>
+
                 <div>
                     <small>SELECTED COLOUR</small>
                     <strong id="selected-colour">White</strong>
                 </div>
+
                 <div>
                     <small>STATUS</small>
                     <strong id="cube-status">Editing</strong>
                 </div>
+
+            </div>
+
+
+            <!-- MOVE NOTATION -->
+
+            <div class="notation">
+
+                <h3>Move Notation</h3>
+
+                <div class="notation-grid">
+
+                    <div><strong>R</strong><span>Right</span></div>
+                    <div><strong>L</strong><span>Left</span></div>
+                    <div><strong>U</strong><span>Up</span></div>
+                    <div><strong>D</strong><span>Down</span></div>
+                    <div><strong>F</strong><span>Front</span></div>
+                    <div><strong>B</strong><span>Back</span></div>
+
+                </div>
+
+                <p>
+                    <b>'</b> = Anticlockwise   |  
+                    <b>2</b> = 180° Turn
+                </p>
+
             </div>
 
         </section>
 
 
+
+        <!-- RIGHT: CONTROLS + SOLVER -->
+
         <aside class="side-panel">
 
+
+            <!-- COLOUR PALETTE -->
+
             <div class="panel-heading">
+
                 <h3>Choose Colour</h3>
+
                 <span>PALETTE</span>
+
             </div>
 
+
             <p class="small-help">
-                Pehle colour choose karo, phir cube ke sticker par tap karo.
+                Select a colour, then tap any sticker on the 3D cube.
             </p>
+
 
             <div class="color-palette">
 
@@ -137,138 +227,167 @@
 
 
             <div class="important-note">
+
                 <strong>Important</strong>
+
                 <p>
-                    Centre stickers ko change nahi karna.
-                    Real cube ke centre colours fixed hote hain.
-                    Pehle ek face dekho, phir cube rotate karke
-                    doosre faces enter karo.
+                    Enter all six faces carefully. Centre stickers are
+                    also editable. Make sure each centre has a different
+                    colour and every colour appears exactly nine times.
                 </p>
+
             </div>
 
 
-            <button class="action-btn primary" id="check-button">
-                CHECK MY CUBE
-            </button>
+            <!-- MAIN ACTIONS -->
 
-            <button class="action-btn solve-button" id="solve-button" disabled>
-                SOLVE MY CUBE
-            </button>
+            <div class="action-buttons">
 
-            <button class="action-btn secondary" id="clear-button">
-                RESET COLOURS
-            </button>
+                <button class="action-btn primary" id="check-button">
+                    CHECK MY CUBE
+                </button>
+
+                <button class="action-btn solve-button" id="solve-button" disabled>
+                    SOLVE MY CUBE
+                </button>
+
+                <button class="action-btn secondary" id="clear-button">
+                    RESET COLOURS
+                </button>
+
+            </div>
+
+
+
+            <!-- VALIDATION RESULT -->
+
+            <div class="result-panel" id="result-panel">
+
+                <div class="result-heading">
+
+                    <span class="badge">CUBE VALIDATION</span>
+
+                    <h3 id="result-title">
+                        Enter Your Cube
+                    </h3>
+
+                </div>
+
+                <p id="result-message">
+                    Set your cube colours and press Check My Cube.
+                </p>
+
+            </div>
+
+
+
+            <!-- SOLVER: BESIDE THE CUBE -->
+
+            <section class="solver-panel" id="solver-panel">
+
+                <div class="solver-header">
+
+                    <span class="badge">YOUR SOLUTION</span>
+
+                    <h2>Step-by-Step Guide</h2>
+
+                    <p id="solution-progress">
+                        Your solution will appear here.
+                    </p>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div id="progress-bar"></div>
+
+                </div>
+
+
+                <div class="current-step">
+
+                    <span id="step-number">READY</span>
+
+                    <h1 id="step-move">R</h1>
+
+                    <h3 id="step-title">
+                        Your First Move
+                    </h3>
+
+                    <p id="step-description">
+                        Follow the move shown on the screen.
+                    </p>
+
+
+                    <div class="move-visual">
+
+                        <div class="move-arrow" id="move-arrow">
+                            ↻
+                        </div>
+
+                        <div>
+
+                            <strong id="move-name">
+                                Right Clockwise
+                            </strong>
+
+                            <small>
+                                Move your real cube in the same direction.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="solution-controls">
+
+                    <button id="previous-step" disabled>
+                        ← Previous
+                    </button>
+
+                    <button id="next-step" disabled>
+                        Next Step →
+                    </button>
+
+                </div>
+
+
+                <div class="solution-complete" id="solution-complete">
+
+                    <h2>Cube Solved!</h2>
+
+                    <p>
+                        Congratulations! Your Rubik's Cube is complete.
+                    </p>
+
+                </div>
+
+            </section>
+
 
         </aside>
 
     </div>
 
 
-    <section class="result-panel" id="result-panel">
 
-        <div class="result-heading">
-            <div>
-                <span class="badge">CUBE VALIDATION</span>
-                <h2 id="result-title">Enter Your Cube</h2>
-            </div>
-        </div>
-
-        <p id="result-message">
-            Apne cube ke colours set karne ke baad Check My Cube dabao.
-        </p>
-
-    </section>
-
-
-    <section class="solver-panel" id="solver-panel">
-
-        <div class="solver-header">
-            <div>
-                <span class="badge">YOUR SOLUTION</span>
-                <h2>Step-by-Step Guide</h2>
-                <p id="solution-progress">Your solution will appear here.</p>
-            </div>
-            <span class="solution-badge">3D GUIDE</span>
-        </div>
-
-
-        <div class="progress-track">
-            <div id="progress-bar"></div>
-        </div>
-
-
-        <div class="current-step">
-
-            <span id="step-number">READY</span>
-
-            <h1 id="step-move">R</h1>
-
-            <h3 id="step-title">Your First Move</h3>
-
-            <p id="step-description">
-                Follow the move shown on the screen.
-            </p>
-
-            <div class="move-visual">
-                <div class="move-arrow" id="move-arrow">↻</div>
-                <div>
-                    <strong id="move-name">Right Clockwise</strong>
-                    <small>Move your real cube in the same direction.</small>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="solution-controls">
-            <button id="previous-step" disabled>← Previous</button>
-            <button id="next-step" disabled>Next Step →</button>
-        </div>
-
-
-        <div class="solution-complete" id="solution-complete">
-            <h2>Cube Solved!</h2>
-            <p>Congratulations! Your Rubik's Cube is complete.</p>
-        </div>
-
-    </section>
-
-
-    <section class="notation">
-
-        <h3>Move Notation Guide</h3>
-
-        <div class="notation-grid">
-            <div><strong>R</strong><span>Right</span></div>
-            <div><strong>L</strong><span>Left</span></div>
-            <div><strong>U</strong><span>Up</span></div>
-            <div><strong>D</strong><span>Down</span></div>
-            <div><strong>F</strong><span>Front</span></div>
-            <div><strong>B</strong><span>Back</span></div>
-        </div>
-
-        <p>
-            <b>'</b> = Anticlockwise   |  
-            <b>2</b> = Two quarter turns
-        </p>
-
-    </section>
-
+    <!-- FOOTER -->
 
     <footer>
+
         <h3>CubeMaster<span>3D</span></h3>
+
         <p>Learn the cube. Master the moves.</p>
+
         <small>© 2026 CubeMaster 3D</small>
+
     </footer>
 
 </main>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
-  }
-}
-</script>
 
 
 <script type="module" src="script.js"></script>
