@@ -962,3 +962,16 @@ if (openScannerBtn) {
         }
     });
 }
+// ========================================
+// VISUAL GUIDE COLLAPSIBLE TOGGLE
+// ========================================
+const guideToggleBtn = document.getElementById('guide-toggle-btn');
+const guideDrawer = document.getElementById('guide-drawer');
+const guideChevron = document.getElementById('guide-chevron');
+
+if (guideToggleBtn && guideDrawer) {
+    guideToggleBtn.addEventListener('click', () => {
+        guideDrawer.classList.toggle('open');
+        if (guideChevron) guideChevron.classList.toggle('open');
+    });
+}
