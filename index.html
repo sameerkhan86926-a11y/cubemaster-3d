@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0812">
+
+<title>CubeMaster 3D - Rubik's Cube Solver</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        <div class="logo-icon">C</div>
+        <div>
+            <h2>CubeMaster<span>3D</span></h2>
+            <small>MASTER THE CUBE</small>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <span class="status-dot"></span>
+        <span>3×3 CUBE</span>
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+
+        <div>
+            <span class="badge">INTERACTIVE 3D EXPERIENCE</span>
+
+            <h1>Master The <span>Rubik's Cube.</span></h1>
+
+            <p>
+                Learn, practice and solve your Rubik's Cube
+                with interactive 3D animations.
+            </p>
+        </div>
+
+    </section>
+
+
+    <div class="workspace">
+
+        <!-- LEFT PANEL -->
+
+        <aside class="left-panel">
+
+            <div class="panel-heading">
+                <h3>Cube Controls</h3>
+                <span>3×3×3</span>
+            </div>
+
+            <div class="control-group">
+
+                <label>Basic Moves</label>
+
+                <div class="move-grid">
+
+                    <button onclick="moveCube('U')">U</button>
+                    <button onclick="moveCube('D')">D</button>
+                    <button onclick="moveCube('L')">L</button>
+                    <button onclick="moveCube('R')">R</button>
+                    <button onclick="moveCube('F')">F</button>
+                    <button onclick="moveCube('B')">B</button>
+
+                </div>
+
+            </div>
+
+
+            <div class="control-group">
+
+                <label>Reverse Moves</label>
+
+                <div class="move-grid reverse">
+
+                    <button onclick="moveCube(\"U'\")">U'</button>
+                    <button onclick="moveCube(\"D'\")">D'</button>
+                    <button onclick="moveCube(\"L'\")">L'</button>
+                    <button onclick="moveCube(\"R'\")">R'</button>
+                    <button onclick="moveCube(\"F'\")">F'</button>
+                    <button onclick="moveCube(\"B'\")">B'</button>
+
+                </div>
+
+            </div>
+
+
+            <div class="control-group">
+
+                <label>Cube Actions</label>
+
+                <button class="action-btn scramble" onclick="scrambleCube()">
+                    ↻ Random Scramble
+                </button>
+
+                <button class="action-btn reset" onclick="resetCube()">
+                    Reset Cube
+                </button>
+
+                <button class="action-btn undo" onclick="undoMove()">
+                    ↶ Undo Last Move
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- CENTER 3D CUBE -->
+
+        <section class="cube-section">
+
+            <div class="cube-topbar">
+
+                <div>
+                    <h3>3D Cube Viewer</h3>
+                    <p>Drag to rotate the cube</p>
+                </div>
+
+                <span class="live-badge">● LIVE 3D</span>
+
+            </div>
+
+
+            <div id="cube-container">
+
+                <div id="loading">
+                    Loading 3D Cube...
+                </div>
+
+            </div>
+
+
+            <div class="viewer-controls">
+
+                <button onclick="rotateView('left')">↶</button>
+                <button onclick="rotateView('right')">↷</button>
+                <button onclick="resetView()">Reset View</button>
+
+            </div>
+
+
+            <div class="cube-info">
+
+                <div>
+                    <small>TOTAL MOVES</small>
+                    <strong id="move-count">0</strong>
+                </div>
+
+                <div>
+                    <small>LAST MOVE</small>
+                    <strong id="last-move">None</strong>
+                </div>
+
+                <div>
+                    <small>CUBE STATUS</small>
+                    <strong id="cube-status">Solved</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT PANEL -->
+
+        <aside class="right-panel">
+
+            <div class="panel-heading">
+                <h3>Learn To Solve</h3>
+                <span>BEGINNER</span>
+            </div>
+
+
+            <div class="learning-list">
+
+                <div class="lesson active" onclick="showLesson(0)">
+                    <span class="lesson-number">01</span>
+                    <div>
+                        <h4>White Cross</h4>
+                        <p>Build the first cross</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(1)">
+                    <span class="lesson-number">02</span>
+                    <div>
+                        <h4>White Corners</h4>
+                        <p>Complete first layer</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(2)">
+                    <span class="lesson-number">03</span>
+                    <div>
+                        <h4>Second Layer</h4>
+                        <p>Complete middle layer</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(3)">
+                    <span class="lesson-number">04</span>
+                    <div>
+                        <h4>Yellow Cross</h4>
+                        <p>Create yellow cross</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(4)">
+                    <span class="lesson-number">05</span>
+                    <div>
+                        <h4>Yellow Face</h4>
+                        <p>Complete yellow face</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(5)">
+                    <span class="lesson-number">06</span>
+                    <div>
+                        <h4>Yellow Corners</h4>
+                        <p>Position the corners</p>
+                    </div>
+                </div>
+
+                <div class="lesson" onclick="showLesson(6)">
+                    <span class="lesson-number">07</span>
+                    <div>
+                        <h4>Final Layer</h4>
+                        <p>Finish the cube</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="lesson-details">
+
+                <span class="badge">YOUR LESSON</span>
+
+                <h3 id="lesson-title">White Cross</h3>
+
+                <p id="lesson-description">
+                    Sabse pehle white center ke around
+                    4 white edge pieces arrange karo.
+                </p>
+
+                <div class="formula-box">
+                    <small>EXAMPLE FORMULA</small>
+                    <strong id="lesson-formula">F R U R' U' F'</strong>
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <section class="notation">
+
+        <h3>Move Notation Guide</h3>
+
+        <div class="notation-grid">
+
+            <div><strong>R</strong><span>Right</span></div>
+            <div><strong>L</strong><span>Left</span></div>
+            <div><strong>U</strong><span>Up</span></div>
+            <div><strong>D</strong><span>Down</span></div>
+            <div><strong>F</strong><span>Front</span></div>
+            <div><strong>B</strong><span>Back</span></div>
+
+        </div>
+
+        <p>
+            <b>'</b> means anticlockwise rotation.
+            Example: R' means reverse right move.
+        </p>
+
+    </section>
+
+
+    <footer>
+        <h3>CubeMaster<span>3D</span></h3>
+        <p>Learn the cube. Master the moves.</p>
+        <small>© 2026 CubeMaster 3D</small>
+    </footer>
+
+</main>
+
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
