@@ -72,25 +72,28 @@ if ('serviceWorker' in navigator) {
     <!-- ======================================== -->
     <!-- 1. HOW TO USE GUIDE IMAGE SECTION       -->
     <!-- ======================================== -->
-    <div class="user-guide-container">
-        <h3 class="guide-title">How To Use CubeMaster 3D</h3>
-        <picture>
-            <img src="./how-to-use-guide.png" alt="How to Use CubeMaster 3D step by step Guide" class="guide-image" loading="lazy">
-        </picture>
+    <!-- COLLAPSIBLE GUIDE CARD -->
+<div class="guide-card-wrapper">
+    <div class="guide-toggle-header" id="guide-toggle-btn">
+        <div class="guide-header-left">
+            <span class="guide-icon">📖</span>
+            <div>
+                <h4>Visual Guide & Step-by-Step Overview</h4>
+                <small>Click to expand/collapse user manual</small>
+            </div>
+        </div>
+        <span class="guide-chevron" id="guide-chevron">▼</span>
     </div>
 
-    <section class="instructions">
-
-        <div class="instruction-number">01</div>
-
-        <div>
-            <h3>Set Your Cube Colours</h3>
-
-            <p>
-                Rotate the 3D cube, select a colour and tap any sticker.
-                All 54 stickers, including centre stickers, are editable.
-            </p>
-        </div>
+    <div class="guide-content-drawer" id="guide-drawer">
+        <picture>
+            <img src="./how-to-use-guide.png" 
+                 alt="How to Use CubeMaster 3D step by step Guide" 
+                 class="guide-image-preview" 
+                 loading="lazy">
+        </picture>
+    </div>
+</div>
 
     </section>
 
