@@ -5,12 +5,16 @@ import { OrbitControls } from
 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
 
 
+// ========================================
+// CONFIGURATION
+// ========================================
+
 const container = document.getElementById('cube-container');
 
+const spacing = 1.02;
+
 const scene = new THREE.Scene();
-
 scene.background = new THREE.Color(0x15101e);
-
 
 const camera = new THREE.PerspectiveCamera(
     40,
@@ -20,7 +24,6 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 camera.position.set(5,5,7);
-
 
 const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -34,115 +37,122 @@ renderer.setSize(
     container.clientHeight
 );
 
-renderer.shadowMap.enabled = true;
-
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 container.appendChild(renderer.domElement);
 
 document.getElementById('loading').style.display = 'none';
 
-
 const controls = new OrbitControls(camera,renderer.domElement);
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
-
 controls.enableZoom = true;
-
 controls.minDistance = 5;
 controls.maxDistance = 13;
 
-
 scene.add(new THREE.AmbientLight(0xffffff,2));
 
-
 const light = new THREE.DirectionalLight(0xffffff,3);
-
 light.position.set(5,8,7);
-
 scene.add(light);
 
-
 const fillLight = new THREE.PointLight(0x9c63ff,25);
-
 fillLight.position.set(-5,3,-4);
-
 scene.add(fillLight);
 
-
 const cubeGroup = new THREE.Group();
-
 scene.add(cubeGroup);
 
 
-const spacing = 1.02;
+// ========================================
+// COLOURS
+// ========================================
+
+const colorValues = {
+    white: 0xffffff,
+    yellow: 0xffeb00,
+    green: 0x16c96b,
+    blue: 0x2676ff,
+    red: 0xff3030,
+    orange: 0xff8c00
+};
+
+const colorNames = {
+    white: 'White',
+    yellow: 'Yellow',
+    green: 'Green',
+    blue: 'Blue',
+    red: 'Red',
+    orange: 'Orange'
+};
+
+let selectedColor = 'white';
+
+
+// ========================================
+// CUBE CREATION
+// ========================================
 
 const cubies = [];
+const stickers = [];
 
 const blackMaterial = new THREE.MeshStandardMaterial({
     color: 0x111111,
     roughness: 0.35
 });
 
-
-const colors = {
-    right: 0xff3333,
-    left: 0xff8c00,
-    up: 0xffffff,
-    down: 0xffff00,
-    front: 0x22cc66,
-    back: 0x2878ff
-};
-
-
 const faceDefinitions = [
-
     {
+        face: 'R',
         normal: [1,0,0],
-        color: colors.right,
-        rotation: [0,Math.PI/2,0],
-        position: [0.501,0,0]
+        position: [0.501,0,0],
+        rotation: [0,Math.PI/2,0]
     },
-
     {
+        face: 'L',
         normal: [-1,0,0],
-        color: colors.left,
-        rotation: [0,-Math.PI/2,0],
-        position: [-0.501,0,0]
+        position: [-0.501,0,0],
+        rotation: [0,-Math.PI/2,0]
     },
-
     {
+        face: 'U',
         normal: [0,1,0],
-        color: colors.up,
-        rotation: [-Math.PI/2,0,0],
-        position: [0,0.501,0]
+        position: [0,0.501,0],
+        rotation: [-Math.PI/2,0,0]
     },
-
     {
+        face: 'D',
         normal: [0,-1,0],
-        color: colors.down,
-        rotation: [Math.PI/2,0,0],
-        position: [0,-0.501,0]
+        position: [0,-0.501,0],
+        rotation: [Math.PI/2,0,0]
     },
-
     {
+        face: 'F',
         normal: [0,0,1],
-        color: colors.front,
-        rotation: [0,0,0],
-        position: [0,0,0.501]
+        position: [0,0,0.501],
+        rotation: [0,0,0]
     },
-
     {
+        face: 'B',
         normal: [0,0,-1],
-        color: colors.back,
-        rotation: [0,Math.PI,0],
-        position: [0,0,-0.501]
+        position: [0,0,-0.501],
+        rotation: [0,Math.PI,0]
     }
-
 ];
+
+function initialColor(face) {
+    const map = {
+        U: 'white',
+        D: 'yellow',
+        F: 'green',
+        B: 'blue',
+        R: 'red',
+        L: 'orange'
+    };
+
+    return map[face];
+}
 
 
 function createCubelet(x,y,z) {
@@ -162,10 +172,9 @@ function createCubelet(x,y,z) {
 
     cubie.add(body);
 
-
     faceDefinitions.forEach(face => {
 
-        const isOuter =
+        const outer =
             (
                 face.normal[0] === 1 && x === 1
             ) ||
@@ -185,49 +194,329 @@ function createCubelet(x,y,z) {
                 face.normal[2] === -1 && z === -1
             );
 
-        if(!isOuter) return;
+        if(!outer) return;
 
+        const colorKey = initialColor(face.face);
 
-        const stickerMaterial = new THREE.MeshStandardMaterial({
-            color: face.color,
-            roughness: 0.3,
-            metalness: 0
+        const material = new THREE.MeshStandardMaterial({
+            color: colorValues[colorKey],
+            roughness: 0.3
         });
-
 
         const sticker = new THREE.Mesh(
             new THREE.PlaneGeometry(0.84,0.84),
-            stickerMaterial
+            material
         );
 
-
         sticker.position.set(...face.position);
-
         sticker.rotation.set(...face.rotation);
 
+        sticker.userData = {
+            isSticker: true,
+            face: face.face,
+            color: colorKey,
+            originalX: x,
+            originalY: y,
+            originalZ: z
+        };
+
         cubie.add(sticker);
+        stickers.push(sticker);
 
     });
 
-
-    cubie.userData.original = {x,y,z};
+    cubie.userData = {
+        original: {x,y,z}
+    };
 
     cubeGroup.add(cubie);
-
     cubies.push(cubie);
+}
+
+
+for(let x=-1;x<=1;x++) {
+    for(let y=-1;y<=1;y++) {
+        for(let z=-1;z<=1;z++) {
+            createCubelet(x,y,z);
+        }
+    }
+}
+
+
+// ========================================
+// STICKER COLOUR PICKING
+// ========================================
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+let pointerDown = null;
+
+renderer.domElement.addEventListener('pointerdown',event => {
+    pointerDown = {
+        x: event.clientX,
+        y: event.clientY
+    };
+});
+
+renderer.domElement.addEventListener('pointerup',event => {
+
+    if(!pointerDown) return;
+
+    const distance = Math.hypot(
+        event.clientX - pointerDown.x,
+        event.clientY - pointerDown.y
+    );
+
+    pointerDown = null;
+
+    if(distance > 7) return;
+    if(isSolving) return;
+
+    const rect = renderer.domElement.getBoundingClientRect();
+
+    pointer.x = (
+        (event.clientX - rect.left) / rect.width
+    ) * 2 - 1;
+
+    pointer.y = -(
+        (event.clientY - rect.top) / rect.height
+    ) * 2 + 1;
+
+    raycaster.setFromCamera(pointer,camera);
+
+    const hits = raycaster.intersectObjects(
+        cubeGroup.children,
+        true
+    );
+
+    const hit = hits.find(item =>
+        item.object.userData.isSticker
+    );
+
+    if(!hit) return;
+
+    const sticker = hit.object;
+
+    // Centre stickers must stay fixed.
+    const d = sticker.userData;
+
+    const isCenter =
+        Math.abs(d.originalX) +
+        Math.abs(d.originalY) +
+        Math.abs(d.originalZ) === 1;
+
+    if(isCenter) {
+        showResult(
+            'Centre stickers cannot be changed.',
+            'Centre colours are fixed on a real Rubik’s Cube.'
+        );
+        return;
+    }
+
+    sticker.userData.color = selectedColor;
+
+    sticker.material.color.setHex(
+        colorValues[selectedColor]
+    );
+
+    updateStickerCount();
+
+    document.getElementById('cube-status').textContent =
+        'Editing';
+
+    document.getElementById('solve-button').disabled = true;
+
+});
+
+
+// ========================================
+// COLOUR PALETTE
+// ========================================
+
+document.querySelectorAll('.color-option').forEach(button => {
+
+    button.addEventListener('click',() => {
+
+        if(isSolving) return;
+
+        document.querySelectorAll('.color-option').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        button.classList.add('active');
+
+        selectedColor = button.dataset.color;
+
+        document.getElementById('selected-colour').textContent =
+            colorNames[selectedColor];
+
+    });
+
+});
+
+
+// ========================================
+// STICKER COUNTER
+// ========================================
+
+function updateStickerCount() {
+
+    const changed = stickers.filter(sticker => {
+
+        const d = sticker.userData;
+
+        return d.color !== initialColor(d.face);
+
+    }).length;
+
+    // There are 48 non-centre stickers.
+    document.getElementById('sticker-count').textContent =
+        changed + ' / 48';
+}
+
+
+// ========================================
+// CUBE FACELET MAPPING
+// ========================================
+
+function getSticker(face,x,y,z) {
+
+    return stickers.find(sticker => {
+
+        const d = sticker.userData;
+
+        return (
+            d.face === face &&
+            d.originalX === x &&
+            d.originalY === y &&
+            d.originalZ === z
+        );
+
+    });
 
 }
 
 
-function createCube() {
+function faceCoordinates(face,row,col) {
 
-    for(let x=-1;x<=1;x++) {
+    switch(face) {
 
-        for(let y=-1;y<=1;y++) {
+        case 'U':
+            return {
+                x: col-1,
+                y: 1,
+                z: row-1
+            };
 
-            for(let z=-1;z<=1;z++) {
+        case 'R':
+            return {
+                x: 1,
+                y: 1-row,
+                z: 1-col
+            };
 
-                createCubelet(x,y,z);
+        case 'F':
+            return {
+                x: col-1,
+                y: 1-row,
+                z: 1
+            };
+
+        case 'D':
+            return {
+                x: 1-col,
+                y: -1,
+                z: 1-row
+            };
+
+        case 'L':
+            return {
+                x: -1,
+                y: 1-row,
+                z: col-1
+            };
+
+        case 'B':
+            return {
+                x: 1-col,
+                y: 1-row,
+                z: -1
+            };
+
+    }
+
+}
+
+
+function getFaceletString() {
+
+    const faces = ['U','R','F','D','L','B'];
+
+    const centers = {};
+
+    for(const face of faces) {
+
+        const coord = faceCoordinates(face,1,1);
+
+        const sticker = getSticker(
+            face,
+            coord.x,
+            coord.y,
+            coord.z
+        );
+
+        if(!sticker) {
+            throw new Error('Centre sticker missing.');
+        }
+
+        centers[face] = sticker.userData.color;
+
+    }
+
+
+    const centerColors = Object.values(centers);
+
+    if(new Set(centerColors).size !== 6) {
+        throw new Error('All six centre colours must be different.');
+    }
+
+
+    const colorToFace = {};
+
+    faces.forEach(face => {
+        colorToFace[centers[face]] = face;
+    });
+
+
+    let facelets = '';
+
+    for(const face of faces) {
+
+        for(let row=0;row<3;row++) {
+
+            for(let col=0;col<3;col++) {
+
+                const coord = faceCoordinates(face,row,col);
+
+                const sticker = getSticker(
+                    face,
+                    coord.x,
+                    coord.y,
+                    coord.z
+                );
+
+                if(!sticker) {
+                    throw new Error('Sticker missing.');
+                }
+
+                const color = sticker.userData.color;
+
+                if(!colorToFace[color]) {
+                    throw new Error('Unknown sticker colour.');
+                }
+
+                facelets += colorToFace[color];
 
             }
 
@@ -235,59 +524,175 @@ function createCube() {
 
     }
 
+    return facelets;
+
 }
 
-createCube();
+
+// ========================================
+// VALIDATION
+// ========================================
+
+let validFacelets = null;
+
+function validateCube() {
+
+    try {
+
+        const facelets = getFaceletString();
+
+        const counts = {};
+
+        for(const face of facelets) {
+            counts[face] = (counts[face] || 0) + 1;
+        }
+
+        for(const face of ['U','R','F','D','L','B']) {
+
+            if(counts[face] !== 9) {
+                throw new Error(
+                    'Har colour exactly 9 baar hona chahiye. ' +
+                    'Current count: ' + face + ' = ' + (counts[face] || 0)
+                );
+            }
+
+        }
+
+        validFacelets = facelets;
+
+        document.getElementById('cube-status').textContent =
+            'Colours OK';
+
+        document.getElementById('solve-button').disabled = false;
+
+        showResult(
+            'Colours look correct!',
+            'Ab Solve My Cube dabakar solution calculate karo.'
+        );
+
+        return true;
+
+    } catch(error) {
+
+        validFacelets = null;
+
+        document.getElementById('solve-button').disabled = true;
+
+        showResult(
+            'Cube needs correction',
+            error.message
+        );
+
+        return false;
+
+    }
+
+}
 
 
-// MOVE ENGINE
+function showResult(title,message) {
+
+    document.getElementById('result-title').textContent = title;
+
+    document.getElementById('result-message').textContent = message;
+
+}
+
+
+// ========================================
+// SOLVER LIBRARY
+// ========================================
+
+let CubeSolver = null;
+let solverReady = false;
+
+async function loadSolver() {
+
+    if(solverReady) return CubeSolver;
+
+    showResult(
+        'Loading solver...',
+        'Rubik’s Cube solving engine load ho raha hai. Internet connection zaroori hai.'
+    );
+
+    const module = await import(
+        'https://esm.sh/cubejs@1.3.2'
+    );
+
+    CubeSolver = module.default || module.Cube;
+
+    if(!CubeSolver) {
+        throw new Error('Solver library could not be loaded.');
+    }
+
+    if(typeof CubeSolver.initSolver === 'function') {
+        CubeSolver.initSolver();
+    }
+
+    solverReady = true;
+
+    return CubeSolver;
+
+}
+
+
+// ========================================
+// SOLUTION STATE
+// ========================================
+
+let solutionMoves = [];
+let currentStep = 0;
+let isSolving = false;
+let busy = false;
 
 const moveDefinitions = {
-
     R: {axis:'x',layer:1,direction:-1},
     L: {axis:'x',layer:-1,direction:1},
-
     U: {axis:'y',layer:1,direction:-1},
     D: {axis:'y',layer:-1,direction:1},
-
     F: {axis:'z',layer:1,direction:-1},
     B: {axis:'z',layer:-1,direction:1}
-
 };
 
 
-let moveHistory = [];
+// ========================================
+// MOVE ANIMATION
+// ========================================
 
-let moveCount = 0;
+function snapCubie(cubie) {
 
-let busy = false;
+    cubie.position.set(
+        Math.round(cubie.position.x / spacing) * spacing,
+        Math.round(cubie.position.y / spacing) * spacing,
+        Math.round(cubie.position.z / spacing) * spacing
+    );
 
-let scrambleMode = false;
+    const matrix = new THREE.Matrix4();
 
+    matrix.makeRotationFromQuaternion(cubie.quaternion);
 
-function updateStatus() {
+    const e = matrix.elements;
 
-    document.getElementById('move-count').textContent =
-        moveCount;
+    for(let i=0;i<16;i++) {
 
-    document.getElementById('last-move').textContent =
-        moveHistory.length
-            ? moveHistory[moveHistory.length-1]
-            : 'None';
+        if(i % 4 !== 3 || i === 15) {
+            e[i] = Math.round(e[i]);
+        }
 
-    document.getElementById('cube-status').textContent =
-        moveCount === 0 ? 'Solved' : 'Scrambled';
+    }
+
+    cubie.quaternion
+        .setFromRotationMatrix(matrix)
+        .normalize();
 
 }
 
 
-function animateMove(notation,saveHistory=true) {
+function animateMove(notation) {
 
     if(busy) return Promise.resolve(false);
 
     const face = notation[0];
-
-    const reverse = notation.includes("'");
 
     const definition = moveDefinitions[face];
 
@@ -295,39 +700,38 @@ function animateMove(notation,saveHistory=true) {
 
     busy = true;
 
-    const direction = definition.direction *
-        (reverse ? -1 : 1);
+    const reverse = notation.includes("'");
+
+    const double = notation.includes('2');
+
+    const direction =
+        definition.direction * (reverse ? -1 : 1);
+
+    const angle =
+        direction * Math.PI/2 * (double ? 2 : 1);
 
     const axis = definition.axis;
 
     const selected = cubies.filter(cubie => {
 
-        const value = cubie.position[axis];
-
         return Math.abs(
-            value - definition.layer * spacing
+            cubie.position[axis] -
+            definition.layer * spacing
         ) < 0.15;
 
     });
 
-
     const pivot = new THREE.Group();
 
-    scene.add(pivot);
+    cubeGroup.add(pivot);
 
     selected.forEach(cubie => {
-
         pivot.attach(cubie);
-
     });
-
 
     const start = performance.now();
 
-    const duration = 220;
-
-    const angle = direction * Math.PI/2;
-
+    const duration = double ? 330 : 250;
 
     return new Promise(resolve => {
 
@@ -341,8 +745,7 @@ function animateMove(notation,saveHistory=true) {
             const eased =
                 1-Math.pow(1-progress,3);
 
-            pivot.rotation[axis] =
-                angle*eased;
+            pivot.rotation[axis] = angleeased;
 
             if(progress < 1) {
 
@@ -354,53 +757,13 @@ function animateMove(notation,saveHistory=true) {
 
                 selected.forEach(cubie => {
 
-                    scene.attach(cubie);
+                    cubeGroup.attach(cubie);
 
-                    cubie.position.set(
-                        Math.round(cubie.position.x/spacing)*spacing,
-                        Math.round(cubie.position.y/spacing)*spacing,
-                        Math.round(cubie.position.z/spacing)*spacing
-                    );
-
-                    const matrix = new THREE.Matrix4();
-
-                    matrix.makeRotationFromQuaternion(
-                        cubie.quaternion
-                    );
-
-                    const elements = matrix.elements;
-
-                    for(let i=0;i<16;i++) {
-
-                        if(i%4 !== 3 || i===15) {
-
-                            elements[i] =
-                                Math.round(elements[i]);
-
-                        }
-
-                    }
-
-                    const snappedQuaternion =
-                        new THREE.Quaternion()
-                        .setFromRotationMatrix(matrix);
-
-                    cubie.quaternion.copy(snappedQuaternion);
+                    snapCubie(cubie);
 
                 });
 
-
-                scene.remove(pivot);
-
-                if(saveHistory) {
-
-                    moveHistory.push(notation);
-
-                }
-
-                moveCount++;
-
-                updateStatus();
+                cubeGroup.remove(pivot);
 
                 busy = false;
 
@@ -417,81 +780,296 @@ function animateMove(notation,saveHistory=true) {
 }
 
 
-window.moveCube = async function(notation) {
+// ========================================
+// SOLUTION CONTROLS
+// ========================================
 
-    if(busy) return;
+function describeMove(move) {
 
-    await animateMove(notation);
+    const faceNames = {
+        R: 'Right',
+        L: 'Left',
+        U: 'Upper',
+        D: 'Down',
+        F: 'Front',
+        B: 'Back'
+    };
 
-};
+    const face = move[0];
 
+    if(move.includes('2')) {
 
-window.scrambleCube = async function() {
-
-    if(busy) return;
-
-    const moves = ['R','L','U','D','F','B'];
-
-    const sequence = [];
-
-    for(let i=0;i<20;i++) {
-
-        let move =
-            moves[Math.floor(Math.random()*moves.length)];
-
-        if(Math.random() > 0.5) move += "'";
-
-        sequence.push(move);
-
-    }
-
-    for(const move of sequence) {
-
-        await animateMove(move);
+        return {
+            name: faceNames[face] + ' Two Turns',
+            arrow: '↻',
+            description:
+                faceNames[face] +
+                ' face ko 180 degrees ghumao. Do quarter turns karo.'
+        };
 
     }
 
-};
+    if(move.includes("'")) {
+
+        return {
+            name: faceNames[face] + ' Anticlockwise',
+            arrow: '↺',
+            description:
+                faceNames[face] +
+                ' face ko anticlockwise 90 degrees ghumao.'
+        };
+
+    }
+
+    return {
+        name: faceNames[face] + ' Clockwise',
+        arrow: '↻',
+        description:
+            faceNames[face] +
+            ' face ko clockwise 90 degrees ghumao.'
+    };
+
+}
 
 
-window.resetCube = function() {
+function updateStepScreen() {
 
-    if(busy) return;
+    const total = solutionMoves.length;
 
-    location.reload();
+    if(currentStep >= total) {
 
-};
+        document.getElementById('step-number').textContent =
+            'COMPLETED';
+
+        document.getElementById('step-move').textContent =
+            '✓';
+
+        document.getElementById('step-title').textContent =
+            'Your Cube Is Solved!';
+
+        document.getElementById('step-description').textContent =
+            'Congratulations! Tumhara Rubik’s Cube solve ho gaya.';
+
+        document.getElementById('move-name').textContent =
+            'All moves completed';
+
+        document.getElementById('move-arrow').textContent =
+            '✓';
+
+        document.getElementById('progress-bar').style.width =
+            '100%';
+
+        document.getElementById('solution-complete').style.display =
+            'block';
+
+        document.getElementById('next-step').disabled = true;
+
+        document.getElementById('previous-step').disabled =
+            total === 0;
+
+        document.getElementById('solution-progress').textContent =
+            total + ' moves completed';
+
+        return;
+
+    }
 
 
-window.undoMove = async function() {
+    const move = solutionMoves[currentStep];
 
-    if(busy || moveHistory.length===0) return;
+    const info = describeMove(move);
 
-    const last = moveHistory.pop();
+    document.getElementById('step-number').textContent =
+        'STEP ' + (currentStep+1) + ' / ' + total;
 
-    const inverse = last.includes("'")
-        ? last[0]
-        : last[0]+"'";
+    document.getElementById('step-move').textContent =
+        move;
 
-    await animateMove(inverse,false);
+    document.getElementById('step-title').textContent =
+        info.name;
 
-    moveHistory.pop();
+    document.getElementById('step-description').textContent =
+        info.description;
 
-    updateStatus();
+    document.getElementById('move-name').textContent =
+        info.name;
 
-};
+    document.getElementById('move-arrow').textContent =
+        info.arrow;
 
+    document.getElementById('progress-bar').style.width =
+        (currentStep/total100) + '%';
+
+    document.getElementById('solution-progress').textContent =
+        'Move ' + (currentStep+1) + ' of ' + total;
+
+    document.getElementById('previous-step').disabled =
+        currentStep === 0;
+
+    document.getElementById('next-step').disabled = false;
+
+    document.getElementById('solution-complete').style.display =
+        'none';
+
+}
+
+
+async function nextStep() {
+
+    if(busy || currentStep >= solutionMoves.length) return;
+
+    const move = solutionMoves[currentStep];
+
+    await animateMove(move);
+
+    currentStep++;
+
+    updateStepScreen();
+
+}
+
+
+async function previousStep() {
+
+    if(busy || currentStep <= 0) return;
+
+    const previousMove = solutionMoves[currentStep-1];
+
+    let inverse;
+
+    if(previousMove.includes('2')) {
+        inverse = previousMove;
+    } else if(previousMove.includes("'")) {
+        inverse = previousMove[0];
+    } else {
+        inverse = previousMove[0] + "'";
+    }
+
+    await animateMove(inverse);
+
+    currentStep--;
+
+    updateStepScreen();
+
+}
+
+
+document.getElementById('next-step').addEventListener(
+    'click',
+    nextStep
+);
+
+document.getElementById('previous-step').addEventListener(
+    'click',
+    previousStep
+);
+
+
+// ========================================
+// SOLVE BUTTON
+// ========================================
+
+async function solveMyCube() {
+
+    if(isSolving) return;
+
+    if(!validateCube()) return;
+
+    isSolving = true;
+
+    document.getElementById('solve-button').disabled = true;
+
+    try {
+
+        const Cube = await loadSolver();
+
+        const cube = Cube.fromString(validFacelets);
+
+        const solution = cube.solve();
+
+        solutionMoves = solution
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+        currentStep = 0;
+
+        document.getElementById('solver-panel').style.display =
+            'block';
+
+        document.getElementById('cube-mode-text').textContent =
+            'Follow the solution on your real cube';
+
+        document.getElementById('cube-status').textContent =
+            'Solution Ready';
+
+        showResult(
+            'Solution calculated!',
+            solutionMoves.length +
+            ' moves required. Ab step-by-step guide follow karo.'
+        );
+
+        updateStepScreen();
+
+        document.getElementById('solver-panel').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+    } catch(error) {
+
+        showResult(
+            'Unable to solve cube',
+            error.message +
+            ' Colours aur cube arrangement dobara check karo.'
+        );
+
+        document.getElementById('solve-button').disabled = false;
+
+    }
+
+    isSolving = false;
+
+}
+
+
+document.getElementById('check-button').addEventListener(
+    'click',
+    validateCube
+);
+
+document.getElementById('solve-button').addEventListener(
+    'click',
+    solveMyCube
+);
+
+
+// ========================================
+// RESET COLOURS
+// ========================================
+
+document.getElementById('clear-button').addEventListener(
+    'click',
+    () => {
+
+        if(isSolving || busy) return;
+
+        location.reload();
+
+    }
+);
+
+
+// ========================================
+// VIEW CONTROLS
+// ========================================
 
 window.rotateView = function(direction) {
 
     if(direction === 'left') {
-
         cubeGroup.rotation.y -= 0.5;
-
     } else {
-
         cubeGroup.rotation.y += 0.5;
-
     }
 
 };
@@ -508,83 +1086,9 @@ window.resetView = function() {
 };
 
 
-// LEARNING SYSTEM
-
-const lessons = [
-
-    {
-        title:'White Cross',
-        description:'Sabse pehle white center ke around 4 white edge pieces arrange karo. Side colors ko bhi unke center se match karna hai.',
-        formula:"F R U R' U' F'"
-    },
-
-    {
-        title:'White Corners',
-        description:'White corners ko unki correct position par lao aur first layer complete karo.',
-        formula:"R U R' U'"
-    },
-
-    {
-        title:'Second Layer',
-        description:'Middle layer ke edge pieces ko sahi position par insert karo.',
-        formula:"U R U' R' U' F' U F"
-    },
-
-    {
-        title:'Yellow Cross',
-        description:'Yellow center ke around yellow edge pieces ka cross banao.',
-        formula:"F R U R' U' F'"
-    },
-
-    {
-        title:'Yellow Face',
-        description:'Yellow face ke sabhi stickers ko upar ki taraf lao.',
-        formula:"R U R' U R U2 R'"
-    },
-
-    {
-        title:'Yellow Corners',
-        description:'Yellow corners ko unki correct positions par arrange karo.',
-        formula:"U R U' L' U R' U' L"
-    },
-
-    {
-        title:'Final Layer',
-        description:'Last layer ke edges ko sahi position mein lao. Cube complete ho jayega.',
-        formula:"R U' R U R U R U' R' U' R2"
-    }
-
-];
-
-
-window.showLesson = function(index) {
-
-    document.querySelectorAll('.lesson').forEach(
-        (element,i) => {
-
-            element.classList.toggle(
-                'active',
-                i === index
-            );
-
-        }
-    );
-
-    const lesson = lessons[index];
-
-    document.getElementById('lesson-title').textContent =
-        lesson.title;
-
-    document.getElementById('lesson-description').textContent =
-        lesson.description;
-
-    document.getElementById('lesson-formula').textContent =
-        lesson.formula;
-
-};
-
-
-// ANIMATION LOOP
+// ========================================
+// RENDER
+// ========================================
 
 function render() {
 
@@ -599,13 +1103,16 @@ function render() {
 render();
 
 
-// RESPONSIVE RESIZE
+// ========================================
+// RESIZE
+// ========================================
 
 window.addEventListener('resize',() => {
 
     const width = container.clientWidth;
-
     const height = container.clientHeight;
+
+    if(!width || !height) return;
 
     camera.aspect = width/height;
 
@@ -615,4 +1122,25 @@ window.addEventListener('resize',() => {
 
 });
 
-updateStatus();
+
+// ========================================
+// ERROR HANDLING
+// ========================================
+
+window.addEventListener('unhandledrejection',event => {
+
+    console.error(event.reason);
+
+    showResult(
+        'Something went wrong',
+        event.reason?.message || 'Please reload the website.'
+    );
+
+});
+
+
+updateStickerCount();
+showResult(
+    'Ready to enter your cube',
+    '3D cube ko rotate karo aur stickers par tap karke colours set karo.'
+);
