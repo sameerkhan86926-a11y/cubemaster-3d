@@ -436,6 +436,7 @@ function snapCubie(cubie) {
 
 function animateMove(notation) {
     if (busy) return Promise.resolve(false);
+    playCubeTurnSound();
 
     const face = notation[0];
     const definition = moveDefinitions[face];
