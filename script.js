@@ -777,4 +777,102 @@ document.querySelectorAll('.shape-btn').forEach(button => {
         applyCubeShape(button.dataset.shape);
     });
 });
+// ========================================
+// REALISTIC CUBE SOUND (WEB AUDIO API)
+// ========================================
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function playCubeTurnSound() {
+    try {
+        if (!audioCtx) {
+            audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        // Pitch variation for natural click
+        const baseFreq = 120 + Math.random() * 40;
+        osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+    } catch (e) {
+        // Audio policy ignore
+    }
+}
+// ========================================
+// CAMERA SCANNER LOGIC
+// ========================================
+const openScannerBtn = document.getElementById('open-scanner-btn');
+const closeScannerBtn = document.getElementById('close-scanner-btn');
+const scannerModal = document.getElementById('scanner-modal');
+const cameraFeed = document.getElementById('camera-feed');
+const captureFaceBtn = document.getElementById('capture-face-btn');
+
+let videoStream = null;
+
+if (openScannerBtn) {
+    openScannerBtn.addEventListener('click', async () => {
+        try {
+            scannerModal.style.display = 'grid';
+            videoStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+            cameraFeed.srcObject = videoStream;
+        } catch (err) {
+            alert('Camera access denied ya camera available nahi hai.');
+            scannerModal.style.display = 'none';
+        }
+    });
+
+    closeScannerBtn.addEventListener('click', () => {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+        }
+        scannerModal.style.display = 'none';
+    });
+
+    // Sample nearest colour from RGB
+    function getClosestCubeColor(r, g, b) {
+        if (r > 150 && g > 150 && b > 150) return 'white';
+        if (r > 160 && g > 160 && b < 100) return 'yellow';
+        if (g > r && g > b) return 'green';
+        if (b > r && b > g) return 'blue';
+        if (r > g && r > b && g < 80) return 'red';
+        if (r > 160 && g >= 70 && b < 70) return 'orange';
+        return 'white';
+    }
+
+    captureFaceBtn.addEventListener('click', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = cameraFeed.videoWidth || 300;
+        canvas.height = cameraFeed.videoHeight || 300;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+
+        showResult('Scanned', 'Camera frame captured! Colors manually verify karke Save karein.');
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+        }
+        scannerModal.style.display = 'none';
+    });
+}
 
