@@ -819,23 +819,53 @@ function playCubeTurnSound() {
         // Audio policy ignore
     }
 }
- // ========================================
-// CAMERA SCANNER LOGIC (FIXED)
+  // ========================================
+// 6-FACE STEP-BY-STEP CAMERA SCANNER
 // ========================================
 const openScannerBtn = document.getElementById('open-scanner-btn');
 const closeScannerBtn = document.getElementById('close-scanner-btn');
 const scannerModal = document.getElementById('scanner-modal');
 const cameraFeed = document.getElementById('camera-feed');
 const captureFaceBtn = document.getElementById('capture-face-btn');
+const scanFaceName = document.getElementById('scan-face-name');
 
 let videoStream = null;
+
+// Scan order aur face rotation angles
+const scanSequence = [
+    { face: 'F', name: 'FRONT (F)', rotY: 0, rotX: 0 },
+    { face: 'R', name: 'RIGHT (R)', rotY: -Math.PI / 2, rotX: 0 },
+    { face: 'B', name: 'BACK (B)', rotY: Math.PI, rotX: 0 },
+    { face: 'L', name: 'LEFT (L)', rotY: Math.PI / 2, rotX: 0 },
+    { face: 'U', name: 'UP / TOP (U)', rotY: 0, rotX: Math.PI / 2 },
+    { face: 'D', name: 'DOWN / BOTTOM (D)', rotY: 0, rotX: -Math.PI / 2 }
+];
+
+let currentScanIndex = 0;
+
+function updateScanStepUI() {
+    if (currentScanIndex < scanSequence.length) {
+        const current = scanSequence[currentScanIndex];
+        if (scanFaceName) {
+            scanFaceName.textContent = current.name + ` [${currentScanIndex + 1}/6]`;
+        }
+        captureFaceBtn.textContent = `CAPTURE ${current.face} FACE (${currentScanIndex + 1}/6)`;
+
+        // 3D cube ko auto-align karein taaki user ko screen par agla face dikhe
+        cubeGroup.rotation.y = current.rotY;
+        cubeGroup.rotation.x = current.rotX;
+    }
+}
 
 if (openScannerBtn) {
     openScannerBtn.addEventListener('click', async () => {
         try {
+            currentScanIndex = 0;
+            updateScanStepUI();
             scannerModal.style.display = 'grid';
+
             videoStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' }
+                video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
             });
             cameraFeed.srcObject = videoStream;
         } catch (err) {
@@ -849,40 +879,35 @@ if (openScannerBtn) {
             videoStream.getTracks().forEach(track => track.stop());
         }
         scannerModal.style.display = 'none';
+        window.resetView();
     });
 
-    // RGB to Nearest Cube Color Detector
+    // Color Detector
     function getClosestCubeColor(r, g, b) {
-        // Bright white check
-        if (r > 160 && g > 160 && b > 160 && Math.abs(r - g) < 25 && Math.abs(r - b) < 25) {
+        if (r > 160 && g > 160 && b > 160 && Math.abs(r - g) < 30 && Math.abs(r - b) < 30) {
             return 'white';
         }
-        // Yellow check (high red + green, low blue)
-        if (r > 140 && g > 130 && b < 100) {
+        if (r > 150 && g > 140 && b < 100) {
             return 'yellow';
         }
-        // Red vs Orange
-        if (r > 130 && g < 100 && b < 100) {
-            return r > 180 && g > 60 ? 'orange' : 'red';
+        if (r > 140 && g < 110 && b < 100) {
+            return (r > 185 && g > 60) ? 'orange' : 'red';
         }
-        if (r > 170 && g > 70 && b < 80) {
+        if (r > 175 && g > 75 && b < 85) {
             return 'orange';
         }
-        // Green
         if (g > r && g > b) {
             return 'green';
         }
-        // Blue
         if (b > r && b > g) {
             return 'blue';
         }
         return 'white';
     }
 
-    // Capture & Apply to 3D Cube (Front Face par auto-apply hoga)
     captureFaceBtn.addEventListener('click', () => {
-        const vw = cameraFeed.videoWidth || 300;
-        const vh = cameraFeed.videoHeight || 300;
+        const vw = cameraFeed.videoWidth || 320;
+        const vh = cameraFeed.videoHeight || 320;
 
         const canvas = document.createElement('canvas');
         canvas.width = vw;
@@ -890,27 +915,23 @@ if (openScannerBtn) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(cameraFeed, 0, 0, vw, vh);
 
-        // Center square coordinates jahan 3x3 grid hai
-        const cropSize = Math.min(vw, vh) * 0.7;
+        const cropSize = Math.min(vw, vh) * 0.72;
         const startX = (vw - cropSize) / 2;
         const startY = (vh - cropSize) / 2;
         const step = cropSize / 3;
 
-        // Front face ('F') ke 9 stickers par apply karein
-        const targetFace = 'F';
+        const currentFace = scanSequence[currentScanIndex].face;
 
+        // Is face ke 9 stickers ko sample karke fill karein
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
-                // Har cell ke center pixel ka color sample karein
                 const px = Math.floor(startX + col * step + step / 2);
                 const py = Math.floor(startY + row * step + step / 2);
                 const pixel = ctx.getImageData(px, py, 1, 1).data;
 
                 const detectedColor = getClosestCubeColor(pixel[0], pixel[1], pixel[2]);
-
-                // 3D cube sticker find karein
-                const coord = faceCoordinates(targetFace, row, col);
-                const sticker = getSticker(targetFace, coord.x, coord.y, coord.z);
+                const coord = faceCoordinates(currentFace, row, col);
+                const sticker = getSticker(currentFace, coord.x, coord.y, coord.z);
 
                 if (sticker) {
                     sticker.userData.color = detectedColor;
@@ -923,11 +944,21 @@ if (openScannerBtn) {
         updateStickerCount();
         resetSolution();
 
-        showResult('Face Scanned!', 'Front face ke 9 stickers camera se bhar diye gaye hain.');
+        currentScanIndex++;
 
-        if (videoStream) {
-            videoStream.getTracks().forEach(track => track.stop());
+        // Agar 6 faces poore nahi hue toh agla face mango
+        if (currentScanIndex < scanSequence.length) {
+            updateScanStepUI();
+        } else {
+            // Saare 6 faces scan ho gaye
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+            scannerModal.style.display = 'none';
+            window.resetView();
+
+            showResult('All 6 Faces Scanned!', 'Cube ke 54 stickers scan ho chuke hain. CHECK MY CUBE dabakar verify karein.');
+            validateCube();
         }
-        scannerModal.style.display = 'none';
     });
 }
