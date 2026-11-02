@@ -11,7 +11,7 @@
 <title>CubeMaster 3D - Rubik's Cube Solver</title>
 
 <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="apple-touch-icon" href="./apple-touch-icon.svg">
 <link rel="manifest" href="./manifest.json">
 
@@ -22,7 +22,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-
 
 <script type="importmap">
 {
@@ -70,6 +69,15 @@ if ('serviceWorker' in navigator) {
 
     </section>
 
+    <!-- ======================================== -->
+    <!-- 1. HOW TO USE GUIDE IMAGE SECTION       -->
+    <!-- ======================================== -->
+    <div class="user-guide-container">
+        <h3 class="guide-title">How To Use CubeMaster 3D</h3>
+        <picture>
+            <img src="./assets/images/how-to-use-guide.png" alt="How to Use CubeMaster 3D step by step Guide" class="guide-image" loading="lazy">
+        </picture>
+    </div>
 
     <section class="instructions">
 
@@ -175,7 +183,7 @@ if ('serviceWorker' in navigator) {
                 </div>
 
                 <p>
-                    <b>'</b> = Anticlockwise   |  
+                    <b>'</b> = Anticlockwise &nbsp; | &nbsp; 
                     <b>2</b> = 180° Turn
                 </p>
 
@@ -199,8 +207,6 @@ if ('serviceWorker' in navigator) {
                 <span>PALETTE</span>
 
             </div>
-          
-
 
             <p class="small-help">
                 Select a colour, then tap any sticker on the 3D cube.
@@ -238,61 +244,60 @@ if ('serviceWorker' in navigator) {
                     <span class="color-circle orange"></span>
                     Orange
                 </button>
-              
 
             </div>
-          <!-- CAMERA SCANNER BUTTON -->
-<button class="action-btn" id="open-scanner-btn" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #fff; margin-bottom: 14px;">
-    📷 SCAN WITH CAMERA
-</button>
 
-<!-- SCANNER MODAL -->
-<div id="scanner-modal" class="scanner-modal" style="display: none;">
-    <div class="scanner-box">
-        <div class="scanner-header">
-            <h3>Scan Cube Face (<span id="scan-face-name">FRONT</span>)</h3>
-            <button id="close-scanner-btn">✕</button>
-        </div>
-        
-        <div class="camera-wrapper">
-            <video id="camera-feed" autoplay playsinline></video>
-            <!-- 3x3 Overlay Grid -->
-            <div class="scan-grid">
-                <div></div><div></div><div></div>
-                <div></div><div></div><div></div>
-                <div></div><div></div><div></div>
+            <!-- CAMERA SCANNER BUTTON -->
+            <button class="action-btn" id="open-scanner-btn" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #fff; margin-bottom: 14px;">
+                📷 SCAN WITH CAMERA
+            </button>
+
+            <!-- SCANNER MODAL -->
+            <div id="scanner-modal" class="scanner-modal" style="display: none;">
+                <div class="scanner-box">
+                    <div class="scanner-header">
+                        <h3>Scan Cube Face (<span id="scan-face-name">FRONT</span>)</h3>
+                        <button id="close-scanner-btn">✕</button>
+                    </div>
+                    
+                    <div class="camera-wrapper">
+                        <video id="camera-feed" autoplay playsinline></video>
+                        <!-- 3x3 Overlay Grid -->
+                        <div class="scan-grid">
+                            <div></div><div></div><div></div>
+                            <div></div><div></div><div></div>
+                            <div></div><div></div><div></div>
+                        </div>
+                    </div>
+
+                    <p class="scan-hint">Square grid me cube ke 9 stickers align karein aur capture dabayein.</p>
+                    
+                    <button class="action-btn solve-button" id="capture-face-btn">
+                        CAPTURE FACE
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <p class="scan-hint">Square grid me cube ke 9 stickers align karein aur capture dabayein.</p>
-        
-        <button class="action-btn solve-button" id="capture-face-btn">
-            CAPTURE FACE
-        </button>
-    </div>
-</div>
+            <!-- CUBE DESIGN / THEME PICKER -->
+            <div class="theme-selector">
+                <small>CUBE THEME</small>
+                <div class="theme-buttons">
+                    <button class="theme-btn active" data-theme="black">Classic Black</button>
+                    <button class="theme-btn" data-theme="white">Pure White</button>
+                    <button class="theme-btn" data-theme="metallic">Carbon Metal</button>
+                    <button class="theme-btn" data-theme="neon">Cyber Neon</button>
+                </div>
+            </div>
 
-          <!-- CUBE DESIGN / THEME PICKER -->
-<div class="theme-selector">
-    <small>CUBE THEME</small>
-    <div class="theme-buttons">
-        <button class="theme-btn active" data-theme="black">Classic Black</button>
-        <button class="theme-btn" data-theme="white">Pure White</button>
-        <button class="theme-btn" data-theme="metallic">Carbon Metal</button>
-        <button class="theme-btn" data-theme="neon">Cyber Neon</button>
-    </div>
-</div>
-<!-- CUBE SHAPE / GEOMETRY PICKER -->
-<div class="theme-selector" style="margin-top: 10px;">
-    <small>CUBE SHAPE DESIGN</small>
-    <div class="theme-buttons">
-        <button class="shape-btn active" data-shape="box">Sharp Classic</button>
-        <button class="shape-btn" data-shape="rounded">Smooth Curve</button>
-        <button class="shape-btn" data-shape="pill">Pillow 3D</button>
-    </div>
-</div>
-
-
+            <!-- CUBE SHAPE / GEOMETRY PICKER -->
+            <div class="theme-selector" style="margin-top: 10px;">
+                <small>CUBE SHAPE DESIGN</small>
+                <div class="theme-buttons">
+                    <button class="shape-btn active" data-shape="box">Sharp Classic</button>
+                    <button class="shape-btn" data-shape="rounded">Smooth Curve</button>
+                    <button class="shape-btn" data-shape="pill">Pillow 3D</button>
+                </div>
+            </div>
 
             <div class="important-note">
 
@@ -442,18 +447,49 @@ if ('serviceWorker' in navigator) {
     </div>
 
 
+    <!-- ======================================== -->
+    <!-- 2. SEO CONTENT & FAQ SECTION (AdSense)   -->
+    <!-- ======================================== -->
+    <section class="seo-content-section">
+        <h2>How CubeMaster 3D Solves the Rubik's Cube</h2>
+        <p>
+            CubeMaster 3D utilizes advanced two-phase solving algorithms (Kociemba's algorithm) to compute 
+            the optimal or near-optimal solution for any standard 3x3 Rubik's Cube within seconds. 
+            Whether you use our real-time 6-face camera scanner or manually select the palette colors, 
+            the system validates the permutation logic and ensures an accurate step-by-step 3D solution.
+        </p>
+
+        <h3>Beginner's Guide to Rubik's Cube Notations</h3>
+        <ul>
+            <li><strong>F (Front):</strong> Rotate the front face clockwise by 90 degrees.</li>
+            <li><strong>R (Right):</strong> Rotate the right face clockwise by 90 degrees.</li>
+            <li><strong>U (Up):</strong> Rotate the top layer clockwise by 90 degrees.</li>
+            <li><strong>L, D, B:</strong> Left, Down, and Back faces respectively. Apostrophe (') indicates counter-clockwise turns, and '2' indicates a 180-degree turn.</li>
+        </ul>
+
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <details>
+            <summary>Why does the solver say "Cube permutation invalid"?</summary>
+            <p>A standard 3x3 cube must have exactly 9 stickers of each colour and 6 unique center pieces. If stickers are misplaced or a corner piece is physically twisted, the cube becomes mathematically unsolvable.</p>
+        </details>
+        <details>
+            <summary>Does this tool work completely offline?</summary>
+            <p>Yes, once loaded, the PWA service worker caches all 3D assets and solver logic, allowing offline operation.</p>
+        </details>
+    </section>
+
 
     <!-- FOOTER -->
 
     <footer class="site-footer">
-    <div class="footer-links">
-        <a href="./about.html">About Us</a>
-        <a href="./contact.html">Contact Us</a>
-        <a href="./privacy.html">Privacy Policy</a>
-        <a href="./terms.html">Terms of Service</a>
-    </div>
-    <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
-</footer>
+        <div class="footer-links">
+            <a href="./about.html">About Us</a>
+            <a href="./contact.html">Contact Us</a>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./terms.html">Terms of Service</a>
+        </div>
+        <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
+    </footer>
 
 </main>
 
