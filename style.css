@@ -975,4 +975,27 @@ footer small {
     border-color: var(--purple);
     box-shadow: 0 4px 12px #7946dc35;
 }
+.shape-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    background: #251b35;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.shape-btn:hover {
+    border-color: var(--purple);
+    transform: translateY(-1px);
+}
+
+.shape-btn.active {
+    background: linear-gradient(135deg, #4ade80, #16c96b);
+    color: #0c0914;
+    border-color: #4ade80;
+    font-weight: 800;
+}
 
