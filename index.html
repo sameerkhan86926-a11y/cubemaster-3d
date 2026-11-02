@@ -10,6 +10,15 @@
 <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="apple-touch-icon" href="./apple-touch-icon.svg">
+<link rel="manifest" href="./manifest.json">
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+    });
+}
+</script>
 
 
 <script type="importmap">
