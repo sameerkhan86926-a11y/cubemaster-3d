@@ -1071,4 +1071,48 @@ footer small {
     color: var(--muted);
     margin: 12px 0;
 }
+/* ========================================
+   FOOTER & LEGAL LINKS STYLING
+======================================== */
+.site-footer {
+    margin-top: 40px;
+    padding: 24px 16px;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #a879ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(168, 121, 255, 0.08);
+    border: 1px solid rgba(168, 121, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: #ffffff;
+    background: #7946dc;
+    border-color: #a879ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(121, 70, 220, 0.35);
+}
+
+.site-footer .copyright {
+    color: var(--muted, #8b859e);
+    font-size: 12px;
+    margin-top: 8px;
+}
 
