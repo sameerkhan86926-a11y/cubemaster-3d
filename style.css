@@ -1168,5 +1168,89 @@ footer small {
     font-size: 13px;
     color: #a1a1aa;
 }
+/* ========================================
+   COLLAPSIBLE GUIDE CARD STYLING
+======================================== */
+.guide-card-wrapper {
+    background: #161024;
+    border: 1px solid var(--border, #2e2448);
+    border-radius: 14px;
+    margin: 20px 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.guide-toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: linear-gradient(90deg, rgba(168, 121, 255, 0.08), transparent);
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.guide-toggle-header:hover {
+    background: rgba(168, 121, 255, 0.15);
+}
+
+.guide-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guide-icon {
+    font-size: 20px;
+}
+
+.guide-toggle-header h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.guide-toggle-header small {
+    color: var(--muted, #8b859e);
+    font-size: 11px;
+}
+
+.guide-chevron {
+    color: var(--purple, #a879ff);
+    font-size: 13px;
+    transition: transform 0.3s ease;
+}
+
+.guide-chevron.open {
+    transform: rotate(180deg);
+}
+
+/* Hidden by default */
+.guide-content-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0f0a1a;
+    text-align: center;
+}
+
+.guide-content-drawer.open {
+    max-height: 1200px;
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.guide-image-preview {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
 
 
