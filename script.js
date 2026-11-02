@@ -709,3 +709,72 @@ updateStickerCount();
 showResult('Ready to enter colours', '3D cube ko ghumakar stickers par click karein aur colours bharein.');
 document.getElementById('cube-status').textContent = 'Editing';
 document.getElementById('solve-button').disabled = true;
+
+// ========================================
+// CUBE SHAPE / CURVE DESIGN SWITCHER
+// ========================================
+
+// 1. Rounded rectangle sticker generator
+function createRoundedRectGeometry(w, h, r, s) {
+    const shape = new THREE.Shape();
+    const x = -w / 2;
+    const y = -h / 2;
+
+    shape.moveTo(x + r, y);
+    shape.lineTo(x + w - r, y);
+    shape.quadraticCurveTo(x + w, y, x + w, y + r);
+    shape.lineTo(x + w, y + h - r);
+    shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    shape.lineTo(x + r, y + h);
+    shape.quadraticCurveTo(x, y + h, x, y + h - r);
+    shape.lineTo(x, y + r);
+    shape.quadraticCurveTo(x, y, x + r, y);
+
+    return new THREE.ShapeGeometry(shape, s);
+}
+
+// 2. Pre-calculated Geometries
+const shapeGeometries = {
+    box: {
+        body: new THREE.BoxGeometry(0.98, 0.98, 0.98),
+        sticker: new THREE.PlaneGeometry(0.84, 0.84)
+    },
+    rounded: {
+        body: new THREE.BoxGeometry(0.94, 0.94, 0.94),
+        sticker: createRoundedRectGeometry(0.80, 0.80, 0.12, 8)
+    },
+    pill: {
+        body: new THREE.SphereGeometry(0.55, 16, 16),
+        sticker: createRoundedRectGeometry(0.74, 0.74, 0.25, 12)
+    }
+};
+
+function applyCubeShape(shapeKey) {
+    const geo = shapeGeometries[shapeKey];
+    if (!geo) return;
+
+    // Body shapes badalna
+    cubies.forEach(cubie => {
+        const bodyMesh = cubie.children[0];
+        if (bodyMesh) {
+            bodyMesh.geometry.dispose();
+            bodyMesh.geometry = geo.body;
+        }
+    });
+
+    // Sticker shapes (flat vs rounded corners) badalna
+    stickers.forEach(sticker => {
+        sticker.geometry.dispose();
+        sticker.geometry = geo.sticker;
+    });
+}
+
+// Shape switch button click listener
+document.querySelectorAll('.shape-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.shape-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        applyCubeShape(button.dataset.shape);
+    });
+});
+
