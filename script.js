@@ -819,8 +819,8 @@ function playCubeTurnSound() {
         // Audio policy ignore
     }
 }
-// ========================================
-// CAMERA SCANNER LOGIC
+ // ========================================
+// CAMERA SCANNER LOGIC (FIXED)
 // ========================================
 const openScannerBtn = document.getElementById('open-scanner-btn');
 const closeScannerBtn = document.getElementById('close-scanner-btn');
@@ -851,29 +851,83 @@ if (openScannerBtn) {
         scannerModal.style.display = 'none';
     });
 
-    // Sample nearest colour from RGB
+    // RGB to Nearest Cube Color Detector
     function getClosestCubeColor(r, g, b) {
-        if (r > 150 && g > 150 && b > 150) return 'white';
-        if (r > 160 && g > 160 && b < 100) return 'yellow';
-        if (g > r && g > b) return 'green';
-        if (b > r && b > g) return 'blue';
-        if (r > g && r > b && g < 80) return 'red';
-        if (r > 160 && g >= 70 && b < 70) return 'orange';
+        // Bright white check
+        if (r > 160 && g > 160 && b > 160 && Math.abs(r - g) < 25 && Math.abs(r - b) < 25) {
+            return 'white';
+        }
+        // Yellow check (high red + green, low blue)
+        if (r > 140 && g > 130 && b < 100) {
+            return 'yellow';
+        }
+        // Red vs Orange
+        if (r > 130 && g < 100 && b < 100) {
+            return r > 180 && g > 60 ? 'orange' : 'red';
+        }
+        if (r > 170 && g > 70 && b < 80) {
+            return 'orange';
+        }
+        // Green
+        if (g > r && g > b) {
+            return 'green';
+        }
+        // Blue
+        if (b > r && b > g) {
+            return 'blue';
+        }
         return 'white';
     }
 
+    // Capture & Apply to 3D Cube (Front Face par auto-apply hoga)
     captureFaceBtn.addEventListener('click', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = cameraFeed.videoWidth || 300;
-        canvas.height = cameraFeed.videoHeight || 300;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+        const vw = cameraFeed.videoWidth || 300;
+        const vh = cameraFeed.videoHeight || 300;
 
-        showResult('Scanned', 'Camera frame captured! Colors manually verify karke Save karein.');
+        const canvas = document.createElement('canvas');
+        canvas.width = vw;
+        canvas.height = vh;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(cameraFeed, 0, 0, vw, vh);
+
+        // Center square coordinates jahan 3x3 grid hai
+        const cropSize = Math.min(vw, vh) * 0.7;
+        const startX = (vw - cropSize) / 2;
+        const startY = (vh - cropSize) / 2;
+        const step = cropSize / 3;
+
+        // Front face ('F') ke 9 stickers par apply karein
+        const targetFace = 'F';
+
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                // Har cell ke center pixel ka color sample karein
+                const px = Math.floor(startX + col * step + step / 2);
+                const py = Math.floor(startY + row * step + step / 2);
+                const pixel = ctx.getImageData(px, py, 1, 1).data;
+
+                const detectedColor = getClosestCubeColor(pixel[0], pixel[1], pixel[2]);
+
+                // 3D cube sticker find karein
+                const coord = faceCoordinates(targetFace, row, col);
+                const sticker = getSticker(targetFace, coord.x, coord.y, coord.z);
+
+                if (sticker) {
+                    sticker.userData.color = detectedColor;
+                    sticker.userData.edited = true;
+                    sticker.material.color.setHex(colorValues[detectedColor]);
+                }
+            }
+        }
+
+        updateStickerCount();
+        resetSolution();
+
+        showResult('Face Scanned!', 'Front face ke 9 stickers camera se bhar diye gaye hain.');
+
         if (videoStream) {
             videoStream.getTracks().forEach(track => track.stop());
         }
         scannerModal.style.display = 'none';
     });
 }
-
