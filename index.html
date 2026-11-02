@@ -235,8 +235,40 @@ if ('serviceWorker' in navigator) {
                     <span class="color-circle orange"></span>
                     Orange
                 </button>
+              
 
             </div>
+          <!-- CAMERA SCANNER BUTTON -->
+<button class="action-btn" id="open-scanner-btn" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #fff; margin-bottom: 14px;">
+    📷 SCAN WITH CAMERA
+</button>
+
+<!-- SCANNER MODAL -->
+<div id="scanner-modal" class="scanner-modal" style="display: none;">
+    <div class="scanner-box">
+        <div class="scanner-header">
+            <h3>Scan Cube Face (<span id="scan-face-name">FRONT</span>)</h3>
+            <button id="close-scanner-btn">✕</button>
+        </div>
+        
+        <div class="camera-wrapper">
+            <video id="camera-feed" autoplay playsinline></video>
+            <!-- 3x3 Overlay Grid -->
+            <div class="scan-grid">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+            </div>
+        </div>
+
+        <p class="scan-hint">Square grid me cube ke 9 stickers align karein aur capture dabayein.</p>
+        
+        <button class="action-btn solve-button" id="capture-face-btn">
+            CAPTURE FACE
+        </button>
+    </div>
+</div>
+
           <!-- CUBE DESIGN / THEME PICKER -->
 <div class="theme-selector">
     <small>CUBE THEME</small>
