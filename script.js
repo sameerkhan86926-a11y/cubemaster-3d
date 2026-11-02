@@ -279,7 +279,7 @@ document.querySelectorAll('.color-option').forEach(button => {
 });
 
 // ========================================
-// FACELET MAPPING (FIXED D COORDINATES)
+// FACELET MAPPING
 // ========================================
 
 function getSticker(face, x, y, z) {
@@ -296,17 +296,17 @@ function getSticker(face, x, y, z) {
 
 function faceCoordinates(face, row, col) {
     switch (face) {
-        case 'U': // Up: Left to right (x: -1 to 1), Top to bottom (z: -1 to 1)
+        case 'U': // Up
             return { x: col - 1, y: 1, z: row - 1 };
-        case 'R': // Right: Front to back (z: 1 to -1), Top to bottom (y: 1 to -1)
+        case 'R': // Right
             return { x: 1, y: 1 - row, z: 1 - col };
-        case 'F': // Front: Left to right (x: -1 to 1), Top to bottom (y: 1 to -1)
+        case 'F': // Front
             return { x: col - 1, y: 1 - row, z: 1 };
-        case 'D': // Down: Left to right (x: -1 to 1), Front to back (z: 1 to -1)
+        case 'D': // Down (Fixed mapping)
             return { x: col - 1, y: -1, z: 1 - row };
-        case 'L': // Left: Back to front (z: -1 to 1), Top to bottom (y: 1 to -1)
+        case 'L': // Left
             return { x: -1, y: 1 - row, z: col - 1 };
-        case 'B': // Back: Right to left (x: 1 to -1), Top to bottom (y: 1 to -1)
+        case 'B': // Back
             return { x: 1 - col, y: 1 - row, z: -1 };
     }
 }
@@ -495,7 +495,7 @@ function animateMove(notation) {
 }
 
 // ========================================
-// MOVE DESCRIPTION & STEP SCREEN
+// MOVE DESCRIPTION & STEP SCREEN (0-BASED FIX)
 // ========================================
 
 function describeMove(move) {
@@ -544,14 +544,22 @@ function updateStepScreen() {
     const move = solutionMoves[currentStep];
     const info = describeMove(move);
 
-    document.getElementById('step-number').textContent = 'STEP ' + (currentStep + 1) + ' / ' + total;
+    if (currentStep === 0) {
+        document.getElementById('step-number').textContent = 'READY (NEXT: MOVE 1 / ' + total + ')';
+        document.getElementById('solution-progress').textContent = '0 / ' + total + ' moves done';
+        document.getElementById('progress-bar').style.width = '0%';
+    } else {
+        document.getElementById('step-number').textContent = 'STEP ' + currentStep + ' / ' + total;
+        document.getElementById('solution-progress').textContent = currentStep + ' / ' + total + ' moves done';
+        document.getElementById('progress-bar').style.width = ((currentStep / total) * 100) + '%';
+    }
+
     document.getElementById('step-move').textContent = move;
     document.getElementById('step-title').textContent = info.name;
     document.getElementById('step-description').textContent = info.description;
     document.getElementById('move-name').textContent = info.name;
     document.getElementById('move-arrow').textContent = info.arrow;
-    document.getElementById('progress-bar').style.width = ((currentStep / total) * 100) + '%';
-    document.getElementById('solution-progress').textContent = 'Move ' + (currentStep + 1) + ' of ' + total;
+
     document.getElementById('previous-step').disabled = currentStep === 0;
     document.getElementById('next-step').disabled = false;
     document.getElementById('solution-complete').style.display = 'none';
