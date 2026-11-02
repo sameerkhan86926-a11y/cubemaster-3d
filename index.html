@@ -9,6 +9,15 @@
 
 <link rel="stylesheet" href="style.css">
 
+<!-- Three.js Import Map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
 </head>
 
 <body>
@@ -84,12 +93,12 @@
 
                 <div class="move-grid reverse">
 
-                    <button onclick="moveCube(\"U'\")">U'</button>
-                    <button onclick="moveCube(\"D'\")">D'</button>
-                    <button onclick="moveCube(\"L'\")">L'</button>
-                    <button onclick="moveCube(\"R'\")">R'</button>
-                    <button onclick="moveCube(\"F'\")">F'</button>
-                    <button onclick="moveCube(\"B'\")">B'</button>
+                    <button onclick="moveCube(&quot;U'&quot;)">U'</button>
+                    <button onclick="moveCube(&quot;D'&quot;)">D'</button>
+                    <button onclick="moveCube(&quot;L'&quot;)">L'</button>
+                    <button onclick="moveCube(&quot;R'&quot;)">R'</button>
+                    <button onclick="moveCube(&quot;F'&quot;)">F'</button>
+                    <button onclick="moveCube(&quot;B'&quot;)">B'</button>
 
                 </div>
 
@@ -299,6 +308,7 @@
 </main>
 
 
+<!-- Main JavaScript -->
 <script type="module" src="script.js"></script>
 
 </body>
