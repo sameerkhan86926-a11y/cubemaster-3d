@@ -44,6 +44,8 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* HEADER /
+
 .header {
     min-height: 76px;
     border-bottom: 1px solid var(--border);
@@ -51,7 +53,7 @@ button:disabled {
     align-items: center;
     justify-content: space-between;
     padding: 0 5%;
-    background: #0c0914eF;
+    background: #0c0914ef;
     backdrop-filter: blur(18px);
     position: relative;
     z-index: 10;
@@ -109,6 +111,8 @@ footer h3 span {
     box-shadow: 0 0 12px var(--green);
 }
 
+/ MAIN CONTAINER /
+
 .container {
     max-width: 1500px;
     margin: auto;
@@ -149,6 +153,8 @@ footer h3 span {
     max-width: 650px;
 }
 
+/ INSTRUCTIONS /
+
 .instructions {
     display: flex;
     align-items: center;
@@ -183,7 +189,7 @@ footer h3 span {
     color: var(--muted);
 }
 
-/* MAIN WORKSPACE /
+/ MAIN WORKSPACE /
 
 .workspace {
     display: grid;
@@ -192,7 +198,7 @@ footer h3 span {
     align-items: start;
 }
 
-/ CUBE AREA /
+/ MAIN PANELS /
 
 .cube-section,
 .side-panel,
@@ -204,6 +210,8 @@ footer h3 span {
     border-radius: 19px;
     box-shadow: var(--shadow);
 }
+
+/ CUBE AREA /
 
 .cube-section {
     padding: 23px;
@@ -283,6 +291,8 @@ footer h3 span {
     z-index: 2;
 }
 
+/ VIEWER CONTROLS /
+
 .viewer-controls {
     display: flex;
     justify-content: center;
@@ -305,6 +315,8 @@ footer h3 span {
     border-color: var(--purple);
     transform: translateY(-2px);
 }
+
+/ CUBE INFORMATION /
 
 .cube-info {
     display: grid;
@@ -355,6 +367,8 @@ footer h3 span {
     border-radius: 10px;
 }
 
+/ PANEL HEADING /
+
 .panel-heading {
     display: flex;
     justify-content: space-between;
@@ -384,6 +398,8 @@ footer h3 span {
     color: var(--muted);
     margin-bottom: 17px;
 }
+
+/ COLOR PALETTE /
 
 .color-palette {
     display: grid;
@@ -433,7 +449,7 @@ footer h3 span {
 .red { background: #ff3030; }
 .orange { background: #ff8c00; }
 
-/ NOTE /
+/ IMPORTANT NOTE /
 
 .important-note {
     padding: 14px;
@@ -491,7 +507,7 @@ footer h3 span {
     border: 1px solid var(--border);
 }
 
-/ RESULT /
+/ RESULT PANEL /
 
 .result-panel {
     padding: 19px;
@@ -500,6 +516,11 @@ footer h3 span {
 
 .result-panel h2,
 .solver-panel h2 {
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+.result-panel h3 {
     font-size: 18px;
     margin-top: 8px;
 }
@@ -521,7 +542,7 @@ footer h3 span {
 
 .solver-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     gap: 10px;
 }
 
@@ -547,6 +568,8 @@ footer h3 span {
     white-space: nowrap;
 }
 
+/ SOLUTION PROGRESS /
+
 .progress-track {
     height: 7px;
     border-radius: 10px;
@@ -561,6 +584,8 @@ footer h3 span {
     background: linear-gradient(90deg, #a879ff, #4ade80);
     transition: width .3s ease;
 }
+
+/ CURRENT STEP /
 
 .current-step {
     padding: 19px;
@@ -595,6 +620,8 @@ footer h3 span {
     line-height: 1.8;
 }
 
+/ MOVE VISUAL /
+
 .move-visual {
     display: flex;
     align-items: center;
@@ -627,6 +654,8 @@ footer h3 span {
     line-height: 1.5;
 }
 
+/ SOLUTION CONTROLS /
+
 .solution-controls {
     display: flex;
     gap: 10px;
@@ -654,6 +683,8 @@ footer h3 span {
     border: none;
 }
 
+/ SOLUTION COMPLETE /
+
 .solution-complete {
     display: none;
     text-align: center;
@@ -671,7 +702,7 @@ footer h3 span {
     line-height: 1.7;
 }
 
-/ NOTATION /
+/ MOVE NOTATION /
 
 .notation {
     padding: 20px;
@@ -741,7 +772,7 @@ footer small {
 
 / TABLET /
 
-@media(max-width: 1000px) {
+@media (max-width: 1000px) {
     .workspace {
         grid-template-columns: minmax(0, 1.2fr) minmax(290px, .8fr);
         gap: 14px;
@@ -768,7 +799,7 @@ footer small {
 
 / MOBILE /
 
-@media(max-width: 760px) {
+@media (max-width: 760px) {
     .header {
         min-height: 68px;
         padding: 0 16px;
@@ -877,7 +908,7 @@ footer small {
 
 / SMALL MOBILE */
 
-@media(max-width: 380px) {
+@media (max-width: 380px) {
     #cube-container {
         height: 330px;
     }
