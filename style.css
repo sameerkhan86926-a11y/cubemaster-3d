@@ -44,7 +44,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* HEADER /
+/* HEADER */
 
 .header {
     min-height: 76px;
@@ -111,7 +111,7 @@ footer h3 span {
     box-shadow: 0 0 12px var(--green);
 }
 
-/ MAIN CONTAINER /
+/* MAIN CONTAINER */
 
 .container {
     max-width: 1500px;
@@ -153,7 +153,7 @@ footer h3 span {
     max-width: 650px;
 }
 
-/ INSTRUCTIONS /
+/* INSTRUCTIONS */
 
 .instructions {
     display: flex;
@@ -189,7 +189,7 @@ footer h3 span {
     color: var(--muted);
 }
 
-/ MAIN WORKSPACE /
+/* MAIN WORKSPACE */
 
 .workspace {
     display: grid;
@@ -198,7 +198,7 @@ footer h3 span {
     align-items: start;
 }
 
-/ MAIN PANELS /
+/* MAIN PANELS */
 
 .cube-section,
 .side-panel,
@@ -211,7 +211,7 @@ footer h3 span {
     box-shadow: var(--shadow);
 }
 
-/ CUBE AREA /
+/* CUBE AREA */
 
 .cube-section {
     padding: 23px;
@@ -291,7 +291,7 @@ footer h3 span {
     z-index: 2;
 }
 
-/ VIEWER CONTROLS /
+/* VIEWER CONTROLS */
 
 .viewer-controls {
     display: flex;
@@ -316,7 +316,7 @@ footer h3 span {
     transform: translateY(-2px);
 }
 
-/ CUBE INFORMATION /
+/* CUBE INFORMATION */
 
 .cube-info {
     display: grid;
@@ -345,7 +345,7 @@ footer h3 span {
     font-weight: 800;
 }
 
-/ RIGHT PANEL /
+/* RIGHT PANEL */
 
 .side-panel {
     padding: 21px;
@@ -367,7 +367,7 @@ footer h3 span {
     border-radius: 10px;
 }
 
-/ PANEL HEADING /
+/* PANEL HEADING */
 
 .panel-heading {
     display: flex;
@@ -399,7 +399,7 @@ footer h3 span {
     margin-bottom: 17px;
 }
 
-/ COLOR PALETTE /
+/* COLOR PALETTE */
 
 .color-palette {
     display: grid;
@@ -449,7 +449,7 @@ footer h3 span {
 .red { background: #ff3030; }
 .orange { background: #ff8c00; }
 
-/ IMPORTANT NOTE /
+/* IMPORTANT NOTE */
 
 .important-note {
     padding: 14px;
@@ -471,7 +471,7 @@ footer h3 span {
     margin-top: 7px;
 }
 
-/ ACTION BUTTONS /
+/* ACTION BUTTONS */
 
 .action-btn {
     width: 100%;
@@ -507,7 +507,7 @@ footer h3 span {
     border: 1px solid var(--border);
 }
 
-/ RESULT PANEL /
+/* RESULT PANEL */
 
 .result-panel {
     padding: 19px;
@@ -532,7 +532,7 @@ footer h3 span {
     margin-top: 11px;
 }
 
-/ SOLVER PANEL /
+/* SOLVER PANEL */
 
 .solver-panel {
     display: none;
@@ -568,7 +568,7 @@ footer h3 span {
     white-space: nowrap;
 }
 
-/ SOLUTION PROGRESS /
+/* SOLUTION PROGRESS */
 
 .progress-track {
     height: 7px;
@@ -585,7 +585,7 @@ footer h3 span {
     transition: width .3s ease;
 }
 
-/ CURRENT STEP /
+/* CURRENT STEP */
 
 .current-step {
     padding: 19px;
@@ -620,7 +620,7 @@ footer h3 span {
     line-height: 1.8;
 }
 
-/ MOVE VISUAL /
+/* MOVE VISUAL */
 
 .move-visual {
     display: flex;
@@ -654,7 +654,7 @@ footer h3 span {
     line-height: 1.5;
 }
 
-/ SOLUTION CONTROLS /
+/* SOLUTION CONTROLS */
 
 .solution-controls {
     display: flex;
@@ -683,7 +683,7 @@ footer h3 span {
     border: none;
 }
 
-/ SOLUTION COMPLETE /
+/* SOLUTION COMPLETE */
 
 .solution-complete {
     display: none;
@@ -702,7 +702,7 @@ footer h3 span {
     line-height: 1.7;
 }
 
-/ MOVE NOTATION /
+/* MOVE NOTATION */
 
 .notation {
     padding: 20px;
@@ -748,7 +748,7 @@ footer h3 span {
     color: var(--muted);
 }
 
-/ FOOTER /
+/* FOOTER */
 
 footer {
     text-align: center;
@@ -770,7 +770,7 @@ footer small {
     font-size: 10px;
 }
 
-/ TABLET /
+/* TABLET */
 
 @media (max-width: 1000px) {
     .workspace {
@@ -797,7 +797,7 @@ footer small {
     }
 }
 
-/ MOBILE /
+/* MOBILE */
 
 @media (max-width: 760px) {
     .header {
@@ -906,7 +906,7 @@ footer small {
     }
 }
 
-/ SMALL MOBILE */
+/* SMALL MOBILE */
 
 @media (max-width: 380px) {
     #cube-container {
