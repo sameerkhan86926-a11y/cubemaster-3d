@@ -96,19 +96,134 @@ if ('serviceWorker' in navigator) {
 <body>
 
 <header class="header">
-    <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
-        <div class="logo-icon">C</div>
-        <div>
-            <h2>CubeMaster<span>3D</span></h2>
-            <small>REAL CUBE SOLVER</small>
-        </div>
-    </a>
+    <div class="header-left">
+        <!-- Hamburger Menu Button -->
+        <button id="menu-toggle-btn" class="menu-btn" aria-label="Toggle navigation menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">C</div>
+            <div>
+                <h2>CubeMaster<span>3D</span></h2>
+                <small>REAL CUBE SOLVER</small>
+            </div>
+        </a>
+    </div>
 
     <div class="header-right">
         <span class="status-dot"></span>
-        <span>3×3 SOLVER</span>
+        <span class="active-puzzle-tag">3×3 SOLVER</span>
     </div>
 </header>
+
+<!-- NAVIGATION DRAWER OVERLAY -->
+<div id="nav-overlay" class="nav-overlay"></div>
+
+<!-- NAVIGATION DRAWER -->
+<nav id="nav-drawer" class="nav-drawer">
+    <div class="drawer-header">
+        <div class="drawer-brand">
+            <div class="logo-icon">C</div>
+            <h3>CubeMaster<span>3D</span></h3>
+        </div>
+        <button id="menu-close-btn" class="close-drawer-btn" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="drawer-section">
+        <h4>SOLVER TOOLS</h4>
+        <ul class="nav-links">
+            <li class="active">
+                <a href="./index.html">
+                    <span class="puzzle-icon">🧊</span>
+                    <div class="nav-text">
+                        <strong>3×3 Cube Solver</strong>
+                        <small>Two-Phase Kociemba Engine</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li class="disabled">
+                <a href="javascript:void(0)" onclick="notifyComingSoon('2x2 Pocket Cube Solver')">
+                    <span class="puzzle-icon">🎲</span>
+                    <div class="nav-text">
+                        <strong>2×2 Pocket Cube</strong>
+                        <small>Ortega & Guimond Algorithms</small>
+                    </div>
+                    <span class="badge-status upcoming">SOON</span>
+                </a>
+            </li>
+            <li class="disabled">
+                <a href="javascript:void(0)" onclick="notifyComingSoon('4x4 Rubik\'s Revenge Solver')">
+                    <span class="puzzle-icon">🧱</span>
+                    <div class="nav-text">
+                        <strong>4×4 Rubik's Revenge</strong>
+                        <small>Reduction & Parity Fixer</small>
+                    </div>
+                    <span class="badge-status upcoming">SOON</span>
+                </a>
+            </li>
+            <li class="disabled">
+                <a href="javascript:void(0)" onclick="notifyComingSoon('Pyraminx Triangle Solver')">
+                    <span class="puzzle-icon">🔺</span>
+                    <div class="nav-text">
+                        <strong>Pyraminx Solver</strong>
+                        <small>Tetrahedron Algorithmic Guide</small>
+                    </div>
+                    <span class="badge-status upcoming">SOON</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="drawer-section">
+        <h4>PAGES &amp; TRANSPARENCY</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="./about.html">
+                    <span class="puzzle-icon">👤</span>
+                    <div class="nav-text">
+                        <strong>About Us &amp; Author</strong>
+                        <small>Developer credentials &amp; tech stack</small>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="./sitemap.html">
+                    <span class="puzzle-icon">🗺️</span>
+                    <div class="nav-text">
+                        <strong>HTML Sitemap</strong>
+                        <small>Quick directory &amp; all pages</small>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="./contact.html">
+                    <span class="puzzle-icon">📩</span>
+                    <div class="nav-text">
+                        <strong>Contact Support</strong>
+                        <small>Feedback &amp; bug reporting</small>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="./disclaimer.html">
+                    <span class="puzzle-icon">📜</span>
+                    <div class="nav-text">
+                        <strong>Legal Disclaimer</strong>
+                        <small>Trademark &amp; educational notice</small>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="drawer-footer">
+        <p>© 2026 CubeMaster 3D. All rights reserved.</p>
+    </div>
+</nav>
 
 <main class="container">
 
@@ -422,17 +537,15 @@ if ('serviceWorker' in navigator) {
             <a href="./contact.html">Contact Us</a>
             <a href="./privacy.html">Privacy Policy</a>
             <a href="./terms.html">Terms of Service</a>
-             <a href="./disclaimer.html">Disclaimer</a>
-               <a href="./sitemap.html">Sitemap</a>
-
-
+            <a href="./disclaimer.html">Disclaimer</a>
+            <a href="./sitemap.html">Sitemap</a>
         </div>
          
         <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
         
         <div class="footer-socials">
-            <a href="https://github.com/sameer7i" target="_blank" rel="noopener">GitHub</a>
-            <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://github.com/sameer7i" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener noreferrer">Instagram</a>
         </div>
     </footer>
 
