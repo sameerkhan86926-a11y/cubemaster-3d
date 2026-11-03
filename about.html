@@ -3,54 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0812">
     <title>About Us - CubeMaster 3D</title>
     <link rel="canonical" href="https://cubemaster-3d.online/about.html">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=2">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2">
+
+    <!-- Schema Markup (AboutPage & Person) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": "About CubeMaster 3D",
+      "url": "https://cubemaster-3d.online/about.html",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Sameer Malik",
+        "jobTitle": "Full-Stack Web & Mobile Application Developer",
+        "sameAs": [
+          "https://github.com/sameer7i",
+          "https://instagram.com/sameer7i"
+        ]
+      }
+    }
+    </script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
         body { background: #0b0812; color: #d4d4d8; line-height: 1.7; padding: 40px 20px; }
-        .container { max-width: 760px; margin: 0 auto; background: #161024; border: 1px solid #2e2448; border-radius: 16px; padding: 32px; }
-        h1 { color: #fff; margin-bottom: 12px; font-size: 28px; }
-        h2 { color: #a879ff; margin: 24px 0 10px; font-size: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #161024; border: 1px solid #2e2448; border-radius: 16px; padding: 36px; }
+        .badge { display: inline-block; padding: 4px 10px; background: rgba(168, 121, 255, 0.15); border: 1px solid #7946dc; border-radius: 20px; color: #c4a1ff; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
+        h1 { color: #fff; margin-bottom: 12px; font-size: 30px; letter-spacing: -0.5px; }
+        h2 { color: #a879ff; margin: 28px 0 12px; font-size: 21px; }
         p { margin-bottom: 16px; font-size: 15px; }
-        ul { margin: 12px 0 16px 20px; }
-        li { margin-bottom: 8px; font-size: 15px; }
+        ul { margin: 12px 0 18px 22px; }
+        li { margin-bottom: 10px; font-size: 15px; }
         a { color: #a879ff; text-decoration: none; font-weight: 600; }
         a:hover { text-decoration: underline; }
-        .back-btn { display: inline-block; margin-top: 24px; padding: 10px 18px; background: #251b35; border: 1px solid #7946dc; border-radius: 8px; color: #fff; transition: 0.2s ease; }
+        
+        /* Developer Bio Box (EEAT Credentials) */
+        .author-box {
+            background: linear-gradient(145deg, #1f1633, #150f22);
+            border: 1px solid #4a3473;
+            border-radius: 14px;
+            padding: 24px;
+            margin: 28px 0;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .author-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #7946dc;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(121, 70, 220, 0.4);
+        }
+        .author-info h3 { color: #fff; font-size: 19px; margin-bottom: 4px; }
+        .author-info .title { color: #bca0f5; font-size: 13px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+        .author-info p { margin-bottom: 8px; font-size: 14px; color: #c4c4cc; }
+        .author-links a { font-size: 13px; margin-right: 14px; color: #e4d4ff; text-decoration: underline; }
+
+        .contact-box { background: #1c142c; border: 1px solid #2e2448; border-radius: 12px; padding: 20px; margin-top: 26px; }
+        .contact-box h3 { color: #a879ff; font-size: 18px; margin-bottom: 8px; }
+        
+        .footer-nav { margin-top: 36px; padding-top: 20px; border-top: 1px solid #2e2448; display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; }
+        .footer-nav a { color: #a1a1aa; font-weight: normal; }
+        .footer-nav a:hover { color: #fff; }
+        
+        .back-btn { display: inline-block; margin-top: 24px; padding: 11px 22px; background: #251b35; border: 1px solid #7946dc; border-radius: 8px; color: #fff; transition: 0.2s ease; font-weight: 600; font-size: 14px; }
         .back-btn:hover { background: #7946dc; text-decoration: none; }
-        .contact-box { background: #1c142c; border: 1px solid #2e2448; border-radius: 12px; padding: 18px 20px; margin-top: 24px; }
-        .contact-box h3 { color: #a879ff; font-size: 17px; margin-bottom: 6px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <span class="badge">DEVELOPMENT & CREDENTIALS</span>
         <h1>About CubeMaster 3D</h1>
-        <p>Welcome to <strong>CubeMaster 3D</strong> (<a href="https://cubemaster-3d.online/">cubemaster-3d.online</a>), an interactive web-based 3D Rubik's Cube solving assistant designed to help cubers, enthusiasts, and learners master the classic 3x3 puzzle effortlessly.</p>
+        <p>Welcome to <strong>CubeMaster 3D</strong> (<a href="https://cubemaster-3d.online/">cubemaster-3d.online</a>), a high-performance web-based 3D Rubik's Cube solver designed to help cubers, enthusiasts, and learners calculate and visualize optimal 3x3 permutation solutions in real time.</p>
 
         <h2>Our Mission</h2>
-        <p>Learning how to solve a Rubik's Cube using static notation charts can be frustrating. Our mission is to make algorithmic solutions accessible, visual, and intuitive through real-time 3D animation, interactive inspection, and camera-assisted color mapping.</p>
+        <p>Solving a scrambled Rubik's Cube using conventional 2D notation sheets can be confusing and error-prone. Our mission is to make algorithmic solutions accessible, interactive, and transparent through browser-level 3D animations, precise coordinate mapping, and camera-assisted optical color scanning.</p>
 
-        <h2>Core Features</h2>
-        <ul>
-            <li><strong>Interactive 3D Engine:</strong> Powered by Three.js, offering fluid rotations, multiple themes, and customizable cube shapes (classic, rounded, and pillow).</li>
-            <li><strong>Algorithmic Precision:</strong> Integrates Kociemba's two-phase algorithm via solving engines to compute short, optimal move sequences.</li>
-            <li><strong>Smart Camera Scanner:</strong> Step-by-step 6-face real-time optical scanning that detects facelet colors directly from your device camera.</li>
-            <li><strong>Progressive Web App (PWA):</strong> Full offline usability with local caching, eliminating the need for continuous internet access once loaded.</li>
-        </ul>
-
-        <h2>Technology Stack</h2>
-        <p>CubeMaster 3D is built entirely using open web standards: HTML5, CSS3, modern ES6 JavaScript, Web Audio API, and WebGL (Three.js), ensuring cross-platform responsiveness on desktops, tablets, and smartphones.</p>
-
-        <h2>Publisher & Transparency</h2>
-        <p>CubeMaster 3D is an independently developed web application engineered to combine clean frontend development with algorithmic puzzle-solving logic. We are committed to maintaining privacy-conscious, client-side execution where user input and camera data stay entirely inside the local browser session.</p>
-
-        <div class="contact-box">
-            <h3>Get in Touch</h3>
-            <p>For questions, support, or partnership inquiries, contact us directly at <a href="mailto:cubemaster3d.contact@gmail.com">cubemaster3d.contact@gmail.com</a>.</p>
+        <!-- AUTHOR CREDENTIALS & EXPERIENCE SECTION -->
+        <h2>Developer & Author Credentials</h2>
+        <div class="author-box">
+            <div class="author-avatar">SM</div>
+            <div class="author-info">
+                <h3>Sameer Malik</h3>
+                <div class="title">Lead Developer & Full-Stack Engineer</div>
+                <p>Sameer is a full-stack web and mobile application developer specializing in Next.js, TypeScript, React, and WebGL graphics engines. With extensive experience in designing algorithmic web utilities and interactive UI architectures, he built CubeMaster 3D to bridge the gap between complex permutation mathematics and intuitive browser experiences.</p>
+                <div class="author-links">
+                    <a href="https://github.com/sameer7i" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
+                    <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener noreferrer">Instagram (@sameer7i)</a>
+                </div>
+            </div>
         </div>
 
-        <a href="/index.html" class="back-btn">← Back to Solver</a>
+        <h2>Authoritative Standards & Mathematical Foundations</h2>
+        <p>CubeMaster 3D adheres strictly to internationally recognized mathematical and speedcubing benchmarks:</p>
+        <ul>
+            <li><strong>Two-Phase Algorithm:</strong> Computational solving routines are derived from <a href="https://en.wikipedia.org/wiki/Optimal_solutions_for_the_Rubik%27s_Cube#Kociemba's_algorithm" target="_blank" rel="noopener noreferrer">Herbert Kociemba's Two-Phase Algorithm</a>, computing near-optimal move sequences (typically under 22 moves) directly in the client browser.</li>
+            <li><strong>WCA Notation Compliance:</strong> All rotation notations (R, L, U, D, F, B, along with prime and double turns) follow the standard official rules codified by the <a href="https://www.worldcubeassociation.org/regulations/" target="_blank" rel="noopener noreferrer">World Cube Association (WCA)</a>.</li>
+            <li><strong>Hardware-Accelerated WebGL:</strong> 3D rendering and geometric transformation matrices run on the industry-standard <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">Three.js Engine</a>, ensuring 60 FPS performance without bulky external plugins.</li>
+        </ul>
+
+        <h2>Technology & Architectural Design</h2>
+        <p>CubeMaster 3D is engineered entirely around open web standards without server-dependent heavy backends:</p>
+        <ul>
+            <li><strong>Zero Server Storage:</strong> Optical camera scanning and manual sticker inputs execute entirely within client-side Web Workers and WebGL buffers. No camera feeds or personal facelet configurations are sent to external cloud servers.</li>
+            <li><strong>Progressive Web App (PWA):</strong> Fully configured with standard Service Workers (`sw.js`) and asset manifests for seamless offline functionality.</li>
+            <li><strong>Web Audio API:</strong> Native procedural synthesis for realistic tactile mechanical cube clicks on each face rotation.</li>
+        </ul>
+
+        <div class="contact-box">
+            <h3>Editorial & Technical Inquiries</h3>
+            <p>If you encounter mathematical edge cases, have feature recommendations, or need technical clarifications, reach out directly to:</p>
+            <p><strong>Official Support:</strong> <a href="mailto:cubemaster3d.contact@gmail.com">cubemaster3d.contact@gmail.com</a></p>
+        </div>
+
+        <a href="./index.html" class="back-btn">← Back to Solver</a>
+
+        <!-- FOOTER NAVIGATION -->
+        <div class="footer-nav">
+            <a href="./index.html">Home / Solver</a>
+            <a href="./about.html">About Us</a>
+            <a href="./contact.html">Contact Us</a>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./terms.html">Terms of Service</a>
+            <a href="./disclaimer.html">Disclaimer</a>
+        </div>
     </div>
 </body>
 </html>
