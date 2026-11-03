@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0812">
+
+<!-- Google AdSense Verification Code -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4230023727229808" crossorigin="anonymous"></script>
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FP37NP9FYP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FP37NP9FYP');
+</script>
+
+<!-- Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://cdn.jsdelivr.net https://esm.sh; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googlesyndication.com https://esm.sh https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; object-src 'none'; base-uri 'self';">
+
+<meta name="description" content="Solve your real 2x2 Pocket Cube with CubeMaster 3D. 3D animated step-by-step solver using BFS optimal algorithms.">
+<link rel="canonical" href="https://cubemaster-3d.online/2x2.html">
+
+<title>2x2 Pocket Cube Solver - CubeMaster 3D</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <button id="menu-toggle-btn" class="menu-btn" aria-label="Toggle navigation menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">C</div>
+            <div>
+                <h2>CubeMaster<span>3D</span></h2>
+                <small>2×2 POCKET CUBE</small>
+            </div>
+        </a>
+    </div>
+
+    <div class="header-right">
+        <span class="status-dot"></span>
+        <span class="active-puzzle-tag" style="background: rgba(22, 201, 107, 0.15); color: #16c96b; border: 1px solid #16c96b; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">2×2 SOLVER LIVE</span>
+    </div>
+</header>
+
+<!-- DRAWER OVERLAY & NAV -->
+<div id="nav-overlay" class="nav-overlay"></div>
+
+<nav id="nav-drawer" class="nav-drawer">
+    <div class="drawer-header">
+        <div class="drawer-brand">
+            <div class="logo-icon">C</div>
+            <h3>CubeMaster<span>3D</span></h3>
+        </div>
+        <button id="menu-close-btn" class="close-drawer-btn" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="drawer-section">
+        <h4>SOLVER TOOLS</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="./index.html">
+                    <span class="puzzle-icon">🧊</span>
+                    <div class="nav-text">
+                        <strong>3×3 Cube Solver</strong>
+                        <small>Two-Phase Kociemba Engine</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="./2x2.html">
+                    <span class="puzzle-icon">🎲</span>
+                    <div class="nav-text">
+                        <strong>2×2 Pocket Cube</strong>
+                        <small>Optimal Solver &amp; 3D Guide</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li class="disabled">
+                <a href="javascript:void(0)" onclick="notifyComingSoon('4x4 Rubik\'s Revenge Solver')">
+                    <span class="puzzle-icon">🧱</span>
+                    <div class="nav-text">
+                        <strong>4×4 Rubik's Revenge</strong>
+                        <small>Reduction &amp; Parity Fixer</small>
+                    </div>
+                    <span class="badge-status upcoming">SOON</span>
+                </a>
+            </li>
+            <li class="disabled">
+                <a href="javascript:void(0)" onclick="notifyComingSoon('Pyraminx Triangle Solver')">
+                    <span class="puzzle-icon">🔺</span>
+                    <div class="nav-text">
+                        <strong>Pyraminx Solver</strong>
+                        <small>Tetrahedron Algorithmic Guide</small>
+                    </div>
+                    <span class="badge-status upcoming">SOON</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="drawer-section">
+        <h4>PAGES &amp; TRANSPARENCY</h4>
+        <ul class="nav-links">
+            <li><a href="./about.html"><span class="puzzle-icon">👤</span><div class="nav-text"><strong>About Us &amp; Author</strong><small>Developer credentials</small></div></a></li>
+            <li><a href="./sitemap.html"><span class="puzzle-icon">🗺️</span><div class="nav-text"><strong>HTML Sitemap</strong><small>Quick directory</small></div></a></li>
+            <li><a href="./contact.html"><span class="puzzle-icon">📩</span><div class="nav-text"><strong>Contact Support</strong><small>Feedback &amp; bugs</small></div></a></li>
+            <li><a href="./disclaimer.html"><span class="puzzle-icon">📜</span><div class="nav-text"><strong>Disclaimer</strong><small>Trademark notice</small></div></a></li>
+        </ul>
+    </div>
+
+    <div class="drawer-footer">
+        <p>© 2026 CubeMaster 3D. All rights reserved.</p>
+    </div>
+</nav>
+
+<main class="container">
+
+    <section class="hero">
+        <span class="badge">OPTIMAL 2×2 SOLVER</span>
+        <h1>Solve Your <span>2x2 Pocket Cube.</span></h1>
+        <p>
+            Enter your 2x2 cube colours (24 stickers total), calculate the optimal move sequence, and follow every move with the interactive 3D guide.
+        </p>
+    </section>
+
+    <!-- INSTRUCTIONS -->
+    <section class="instructions">
+        <div class="instruction-number">01</div>
+        <div>
+            <h3>Input 24 Facelet Colours</h3>
+            <p>
+                Rotate the 3D 2x2 cube, select a color from the palette, and tap the stickers to match your physical Pocket Cube.
+            </p>
+        </div>
+    </section>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+
+        <!-- LEFT: 3D CUBE -->
+        <section class="cube-section">
+            <div class="cube-topbar">
+                <div>
+                    <h3>2×2 3D Model</h3>
+                    <p id="cube-mode-text">Tap stickers to set colours</p>
+                </div>
+                <span class="live-badge">● LIVE 3D</span>
+            </div>
+
+            <div id="cube-container">
+                <div id="loading">Loading 2x2 Cube...</div>
+            </div>
+
+            <div class="viewer-controls">
+                <button onclick="rotateView('left')">↶ Rotate</button>
+                <button onclick="rotateView('right')">Rotate ↷</button>
+                <button onclick="resetView()">Reset View</button>
+            </div>
+
+            <div class="cube-info">
+                <div>
+                    <small>EDITED STICKERS</small>
+                    <strong id="sticker-count">0 / 24</strong>
+                </div>
+                <div>
+                    <small>SELECTED COLOUR</small>
+                    <strong id="selected-colour">White</strong>
+                </div>
+                <div>
+                    <small>STATUS</small>
+                    <strong id="cube-status">Editing</strong>
+                </div>
+            </div>
+
+            <!-- MOVE NOTATION -->
+            <div class="notation">
+                <h3>2x2 Move Notation</h3>
+                <div class="notation-grid">
+                    <div><strong>R</strong><span>Right</span></div>
+                    <div><strong>U</strong><span>Up</span></div>
+                    <div><strong>F</strong><span>Front</span></div>
+                </div>
+                <p>
+                    <b>'</b> = Anticlockwise &nbsp; | &nbsp; 
+                    <b>2</b> = 180° Turn
+                </p>
+            </div>
+        </section>
+
+        <!-- RIGHT: CONTROLS + SOLVER -->
+        <aside class="side-panel">
+
+            <div class="panel-heading">
+                <h3>Choose Colour</h3>
+                <span>PALETTE</span>
+            </div>
+
+            <p class="small-help">
+                Pick a color and tap each of the 24 stickers on the 2x2 cube.
+            </p>
+
+            <div class="color-palette">
+                <button class="color-option active" data-color="white">
+                    <span class="color-circle white"></span> White
+                </button>
+                <button class="color-option" data-color="yellow">
+                    <span class="color-circle yellow"></span> Yellow
+                </button>
+                <button class="color-option" data-color="green">
+                    <span class="color-circle green"></span> Green
+                </button>
+                <button class="color-option" data-color="blue">
+                    <span class="color-circle blue"></span> Blue
+                </button>
+                <button class="color-option" data-color="red">
+                    <span class="color-circle red"></span> Red
+                </button>
+                <button class="color-option" data-color="orange">
+                    <span class="color-circle orange"></span> Orange
+                </button>
+            </div>
+
+            <div class="important-note">
+                <strong>2x2 Permutation Rule</strong>
+                <p>
+                    A 2x2 cube has 6 faces with 4 stickers each (24 stickers total). Exactly 4 stickers of each color must exist for a mathematically solvable cube.
+                </p>
+            </div>
+
+            <!-- MAIN ACTIONS -->
+            <div class="action-buttons">
+                <button class="action-btn primary" id="check-button">
+                    CHECK 2×2 CUBE
+                </button>
+                <button class="action-btn solve-button" id="solve-button" disabled>
+                    SOLVE 2×2 CUBE
+                </button>
+                <button class="action-btn secondary" id="clear-button">
+                    RESET COLOURS
+                </button>
+            </div>
+
+            <!-- VALIDATION RESULT -->
+            <div class="result-panel" id="result-panel">
+                <div class="result-heading">
+                    <span class="badge">VALIDATION</span>
+                    <h3 id="result-title">Enter 2x2 Colours</h3>
+                </div>
+                <p id="result-message">
+                    Fill all 24 stickers (4 of each colour) and press Check.
+                </p>
+            </div>
+
+            <!-- SOLVER PANEL -->
+            <section class="solver-panel" id="solver-panel" style="display: none;">
+                <div class="solver-header">
+                    <span class="badge">OPTIMAL SOLUTION</span>
+                    <h2>Step-by-Step Guide</h2>
+                    <p id="solution-progress">Solution will appear here.</p>
+                </div>
+
+                <div class="progress-track">
+                    <div id="progress-bar"></div>
+                </div>
+
+                <div class="current-step">
+                    <span id="step-number">READY</span>
+                    <div class="step-move-display" id="step-move">R</div>
+                    <h3 id="step-title">Your First Move</h3>
+                    <p id="step-description">Follow the move shown on the screen.</p>
+
+                    <div class="move-visual">
+                        <div class="move-arrow" id="move-arrow">↻</div>
+                        <div>
+                            <strong id="move-name">Right Clockwise</strong>
+                            <small>Turn right face clockwise by 90°.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="solution-controls">
+                    <button id="previous-step" disabled>← Previous</button>
+                    <button id="next-step" disabled>Next Step →</button>
+                </div>
+
+                <div class="solution-complete" id="solution-complete" style="display: none;">
+                    <h2>2x2 Solved!</h2>
+                    <p>Congratulations! Your Pocket Cube is completely solved.</p>
+                </div>
+            </section>
+
+        </aside>
+    </div>
+
+    <!-- SEO & EXPLANATORY SECTION -->
+    <section class="seo-content-section">
+        <h2>How the 2x2 Pocket Cube Solver Works</h2>
+        <p>
+            The 2x2 Rubik's Cube (commonly known as the Pocket Cube or Mini Cube) consists solely of 8 corner cubies without fixed center or edge pieces. Because of this, one corner piece can be held permanently in place to serve as the orientation anchor, drastically reducing the search space to 3,674,160 possible permutations.
+        </p>
+
+        <h3>Ortega and EG Methods Explained</h3>
+        <p>
+            Speedcubers generally solve the 2x2 using the <strong>Ortega Method</strong> or the advanced <strong>EG (Erik-Gunnar) Method</strong>:
+        </p>
+        <ul>
+            <li><strong>First Face:</strong> Build any solid color face (pieces do not need to be oriented in the first layer).</li>
+            <li><strong>Orientation of the Last Layer (OLL):</strong> Orient the opposite yellow/white face using 7 key algorithms.</li>
+            <li><strong>Permutation of Both Layers (PBL):</strong> Permute both layers simultaneously in a single algorithm.</li>
+        </ul>
+
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <details>
+            <summary>What is God's Number for the 2x2 Cube?</summary>
+            <p>In the half-turn metric (HTM), God's Number for the 2x2 Pocket Cube is 11 moves. In the quarter-turn metric (QTM), it is 14 moves. Any scramble can theoretically be solved in 11 or fewer turns.</p>
+        </details>
+        <details>
+            <summary>Why are there no center pieces on a 2x2?</summary>
+            <p>The 2x2 cube is mechanically a 3x3 cube with the center and edge pieces hidden inside the core. The 8 visible blocks are exclusively corners with 3 colored facelets each.</p>
+        </details>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="./about.html">About Us</a>
+            <a href="./contact.html">Contact Us</a>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./terms.html">Terms of Service</a>
+            <a href="./disclaimer.html">Disclaimer</a>
+            <a href="./sitemap.html">Sitemap</a>
+        </div>
+        <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
+        <div class="footer-socials">
+            <a href="https://github.com/sameer7i" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+    </footer>
+
+</main>
+
+<script type="module" src="script-2x2.js"></script>
+
+</body>
+</html>
