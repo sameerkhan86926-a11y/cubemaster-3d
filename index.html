@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b0812">
+
 <!-- Google AdSense Verification Code -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4230023727229808"
      crossorigin="anonymous"></script>
@@ -18,10 +19,8 @@
   gtag('config', 'G-FP37NP9FYP');
 </script>
 
-<!-- Content Security Policy (Allowing Real GA4 + AdSense) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://cdn.jsdelivr.net; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' blob:;">
-
-
+<!-- Content Security Policy (Fully Qualified for esm.sh, jsdelivr, GA4 & AdSense) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://cdn.jsdelivr.net https://esm.sh; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googlesyndication.com https://esm.sh https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; object-src 'none'; base-uri 'self';">
 
 <!-- Meta Description -->
 <meta name="description" content="Solve your real 3x3 Rubik's Cube with CubeMaster 3D. Features real-time 6-face camera scanning, step-by-step 3D animated algorithms, and full offline PWA support.">
@@ -29,9 +28,6 @@
 <!-- Canonical Link -->
 <link rel="canonical" href="https://cubemaster-3d.online/">
 
-
-<!-- Fully Qualified CSP Meta Tag for AdSense, GA4 & Three.js -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googlesyndication.com; font-src 'self' data:; object-src 'none'; base-uri 'self';">
 <!-- Open Graph / Facebook / WhatsApp -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cubemaster-3d.online/">
@@ -51,14 +47,13 @@
 <meta name="twitter:image" content="https://cubemaster-3d.online/how-to-use-guide.png">
 <meta name="twitter:creator" content="@sameer7i">
 
-
 <!-- Schema Markup (JSON-LD) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "CubeMaster 3D",
-"url": "https://cubemaster-3d.online/"
+  "url": "https://cubemaster-3d.online/",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "All",
   "description": "Interactive 3D Rubik's Cube solver with camera scanning and animated solution guide.",
@@ -96,16 +91,13 @@ if ('serviceWorker' in navigator) {
   }
 }
 </script>
-
 </head>
 
 <body>
 
 <header class="header">
-
     <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
         <div class="logo-icon">C</div>
-
         <div>
             <h2>CubeMaster<span>3D</span></h2>
             <small>REAL CUBE SOLVER</small>
@@ -116,23 +108,17 @@ if ('serviceWorker' in navigator) {
         <span class="status-dot"></span>
         <span>3×3 SOLVER</span>
     </div>
-
 </header>
-
 
 <main class="container">
 
     <section class="hero">
-
         <span class="badge">INTERACTIVE RUBIK'S CUBE SOLVER</span>
-
         <h1>Solve Your <span>Real Cube.</span></h1>
-
         <p>
             Enter your real cube colours, calculate the solution
             and follow every move with the interactive 3D guide.
         </p>
-
     </section>
 
     <!-- 1. COLLAPSIBLE GUIDE CARD -->
@@ -160,171 +146,110 @@ if ('serviceWorker' in navigator) {
 
     <!-- INSTRUCTIONS -->
     <section class="instructions">
-
         <div class="instruction-number">01</div>
-
         <div>
             <h3>Set Your Cube Colours</h3>
-
             <p>
-                Rotate the 3D cube, select a colour and tap any sticker.
-                All 54 stickers, including centre stickers, are editable.
+                Rotate the 3D cube, select a colour and tap any outer sticker.
+                Fixed standard center stickers guide each face's orientation.
             </p>
         </div>
-
     </section>
 
-
     <!-- MAIN WORKSPACE -->
-
     <div class="workspace">
 
-
         <!-- LEFT: 3D CUBE -->
-
         <section class="cube-section">
-
             <div class="cube-topbar">
-
                 <div>
                     <h3>Your 3D Cube</h3>
-
-                    <p id="cube-mode-text">
-                        Tap stickers to change their colours
-                    </p>
+                    <p id="cube-mode-text">Tap stickers to change their colours</p>
                 </div>
-
                 <span class="live-badge">● LIVE 3D</span>
-
             </div>
-
 
             <div id="cube-container">
-
-                <div id="loading">
-                    Loading 3D Cube...
-                </div>
-
+                <div id="loading">Loading 3D Cube...</div>
             </div>
-
 
             <div class="viewer-controls">
-
-                <button onclick="rotateView('left')">
-                    ↶ Rotate
-                </button>
-
-                <button onclick="rotateView('right')">
-                    Rotate ↷
-                </button>
-
-                <button onclick="resetView()">
-                    Reset View
-                </button>
-
+                <button onclick="rotateView('left')">↶ Rotate</button>
+                <button onclick="rotateView('right')">Rotate ↷</button>
+                <button onclick="resetView()">Reset View</button>
             </div>
 
-
             <div class="cube-info">
-
                 <div>
                     <small>EDITED STICKERS</small>
                     <strong id="sticker-count">0 / 54</strong>
                 </div>
-
                 <div>
                     <small>SELECTED COLOUR</small>
                     <strong id="selected-colour">White</strong>
                 </div>
-
                 <div>
                     <small>STATUS</small>
                     <strong id="cube-status">Editing</strong>
                 </div>
-
             </div>
 
-
             <!-- MOVE NOTATION -->
-
             <div class="notation">
-
                 <h3>Move Notation</h3>
-
                 <div class="notation-grid">
-
                     <div><strong>R</strong><span>Right</span></div>
                     <div><strong>L</strong><span>Left</span></div>
                     <div><strong>U</strong><span>Up</span></div>
                     <div><strong>D</strong><span>Down</span></div>
                     <div><strong>F</strong><span>Front</span></div>
                     <div><strong>B</strong><span>Back</span></div>
-
                 </div>
-
                 <p>
                     <b>'</b> = Anticlockwise &nbsp; | &nbsp; 
                     <b>2</b> = 180° Turn
                 </p>
-
             </div>
-
         </section>
 
-
-
         <!-- RIGHT: CONTROLS + SOLVER -->
-
         <aside class="side-panel">
 
-
             <!-- COLOUR PALETTE -->
-
             <div class="panel-heading">
-
                 <h3>Choose Colour</h3>
-
                 <span>PALETTE</span>
-
             </div>
 
             <p class="small-help">
                 Select a colour, then tap any sticker on the 3D cube.
             </p>
 
-
             <div class="color-palette">
-
                 <button class="color-option active" data-color="white">
                     <span class="color-circle white"></span>
                     White
                 </button>
-
                 <button class="color-option" data-color="yellow">
                     <span class="color-circle yellow"></span>
                     Yellow
                 </button>
-
                 <button class="color-option" data-color="green">
                     <span class="color-circle green"></span>
                     Green
                 </button>
-
                 <button class="color-option" data-color="blue">
                     <span class="color-circle blue"></span>
                     Blue
                 </button>
-
                 <button class="color-option" data-color="red">
                     <span class="color-circle red"></span>
                     Red
                 </button>
-
                 <button class="color-option" data-color="orange">
                     <span class="color-circle orange"></span>
                     Orange
                 </button>
-
             </div>
 
             <!-- CAMERA SCANNER BUTTON -->
@@ -342,7 +267,6 @@ if ('serviceWorker' in navigator) {
                     
                     <div class="camera-wrapper">
                         <video id="camera-feed" autoplay playsinline></video>
-                        <!-- 3x3 Overlay Grid -->
                         <div class="scan-grid">
                             <div></div><div></div><div></div>
                             <div></div><div></div><div></div>
@@ -380,159 +304,80 @@ if ('serviceWorker' in navigator) {
             </div>
 
             <div class="important-note">
-
                 <strong>Important</strong>
-
                 <p>
-                    Enter all six faces carefully. Centre stickers are
-                    also editable. Make sure each centre has a different
-                    colour and every colour appears exactly nine times.
+                    Align your cube using the center pieces as anchor points. 
+                    Every color must appear exactly nine times for a valid permutation.
                 </p>
-
             </div>
 
-
             <!-- MAIN ACTIONS -->
-
             <div class="action-buttons">
-
                 <button class="action-btn primary" id="check-button">
                     CHECK MY CUBE
                 </button>
-
                 <button class="action-btn solve-button" id="solve-button" disabled>
                     SOLVE MY CUBE
                 </button>
-
                 <button class="action-btn secondary" id="clear-button">
                     RESET COLOURS
                 </button>
-
             </div>
 
-
-
             <!-- VALIDATION RESULT -->
-
             <div class="result-panel" id="result-panel">
-
                 <div class="result-heading">
-
                     <span class="badge">CUBE VALIDATION</span>
-
-                    <h3 id="result-title">
-                        Enter Your Cube
-                    </h3>
-
+                    <h3 id="result-title">Enter Your Cube</h3>
                 </div>
-
                 <p id="result-message">
                     Set your cube colours and press Check My Cube.
                 </p>
-
             </div>
 
-
-
             <!-- SOLVER: BESIDE THE CUBE -->
-
             <section class="solver-panel" id="solver-panel">
-
                 <div class="solver-header">
-
                     <span class="badge">YOUR SOLUTION</span>
-
                     <h2>Step-by-Step Guide</h2>
-
-                    <p id="solution-progress">
-                        Your solution will appear here.
-                    </p>
-
+                    <p id="solution-progress">Your solution will appear here.</p>
                 </div>
-
 
                 <div class="progress-track">
-
                     <div id="progress-bar"></div>
-
                 </div>
-
 
                 <div class="current-step">
-
                     <span id="step-number">READY</span>
-
-                    <!-- FIXED: Replaced h1 with div to ensure exactly 1 H1 on page -->
                     <div class="step-move-display" id="step-move">R</div>
-
-                    <h3 id="step-title">
-                        Your First Move
-                    </h3>
-
-                    <p id="step-description">
-                        Follow the move shown on the screen.
-                    </p>
-
+                    <h3 id="step-title">Your First Move</h3>
+                    <p id="step-description">Follow the move shown on the screen.</p>
 
                     <div class="move-visual">
-
-                        <div class="move-arrow" id="move-arrow">
-                            ↻
-                        </div>
-
+                        <div class="move-arrow" id="move-arrow">↻</div>
                         <div>
-
-                            <strong id="move-name">
-                                Right Clockwise
-                            </strong>
-
-                            <small>
-                                Move your real cube in the same direction.
-                            </small>
-
+                            <strong id="move-name">Right Clockwise</strong>
+                            <small>Move your real cube in the same direction.</small>
                         </div>
-
                     </div>
-
                 </div>
-
 
                 <div class="solution-controls">
-
-                    <button id="previous-step" disabled>
-                        ← Previous
-                    </button>
-
-                    <button id="next-step" disabled>
-                        Next Step →
-                    </button>
-
+                    <button id="previous-step" disabled>← Previous</button>
+                    <button id="next-step" disabled>Next Step →</button>
                 </div>
-
 
                 <div class="solution-complete" id="solution-complete">
-
                     <h2>Cube Solved!</h2>
-
-                    <p>
-                        Congratulations! Your Rubik's Cube is complete.
-                    </p>
-
+                    <p>Congratulations! Your Rubik's Cube is complete.</p>
                 </div>
-
             </section>
 
-
         </aside>
-
     </div>
 
-
-    <!-- ======================================== -->
-    <!-- 2. SEO CONTENT & FAQ SECTION (AdSense)   -->
-    <!-- ======================================== -->
+    <!-- SEO CONTENT & FAQ SECTION -->
     <section class="seo-content-section">
-         
         <h2>How CubeMaster 3D Solves the Rubik's Cube</h2>
         <p>
             CubeMaster 3D utilizes advanced two-phase solving algorithms (Kociemba's algorithm) to compute 
@@ -570,9 +415,7 @@ if ('serviceWorker' in navigator) {
         </details>
     </section>
 
-
     <!-- FOOTER -->
-
     <footer class="site-footer">
         <div class="footer-links">
             <a href="./about.html">About Us</a>
@@ -587,11 +430,9 @@ if ('serviceWorker' in navigator) {
             <a href="https://github.com/sameer7i" target="_blank" rel="noopener">GitHub</a>
             <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener">Instagram</a>
         </div>
-
     </footer>
 
 </main>
-
 
 <script type="module" src="script.js"></script>
 
