@@ -84,8 +84,7 @@ const colorValues = {
     green: 0x16c96b,
     blue: 0x2676ff,
     red: 0xff3030,
-    orange: 0xff8c00,
-    blank: 0x222228 // Unfilled sticker placeholder (dark greyish white tint)
+    orange: 0xff8c00
 };
 
 const colorNames = {
@@ -95,16 +94,6 @@ const colorNames = {
     blue: 'Blue',
     red: 'Red',
     orange: 'Orange'
-};
-
-// Standard Western Centers (Fixed reference for solver)
-const centerColors = {
-    U: 'white',
-    D: 'yellow',
-    F: 'green',
-    B: 'blue',
-    R: 'red',
-    L: 'orange'
 };
 
 let selectedColor = 'white';
@@ -156,13 +145,10 @@ function createCubelet(x, y, z) {
 
         if (!outer) return;
 
-        const isCenter = isCenterPiece(face.face, x, y, z);
-        
-        // Agar center hai toh fixed standard color, baaki 48 stickers shuru me 'blank' (all unedited)
-        const initialColor = isCenter ? centerColors[face.face] : 'blank';
-
+        // START ME PURA CUBE 100% WHITE LOAD HOGA
+        const colorKey = 'white';
         const material = new THREE.MeshStandardMaterial({
-            color: colorValues[initialColor],
+            color: colorValues[colorKey],
             roughness: 0.3
         });
 
@@ -177,9 +163,9 @@ function createCubelet(x, y, z) {
         sticker.userData = {
             isSticker: true,
             face: face.face,
-            color: initialColor,
-            isCenter: isCenter,
-            edited: isCenter, // centers automatically count as configured
+            color: colorKey,
+            isCenter: isCenterPiece(face.face, x, y, z),
+            edited: false,
             originalX: x,
             originalY: y,
             originalZ: z
@@ -219,9 +205,8 @@ let validFacelets = null;
 // ========================================
 
 function updateStickerCount() {
-    // 48 outer stickers me se kitne user ne edit kiye
-    const editedOuter = stickers.filter(s => !s.userData.isCenter && s.userData.color !== 'blank').length;
-    document.getElementById('sticker-count').textContent = editedOuter + ' / 48';
+    const edited = stickers.filter(s => s.userData.edited === true).length;
+    document.getElementById('sticker-count').textContent = edited + ' / 54';
 }
 
 function resetSolution() {
@@ -272,12 +257,6 @@ renderer.domElement.addEventListener('pointerup', event => {
     if (!hit) return;
 
     const sticker = hit.object;
-
-    // Center pieces fixed hote hain taaki orientation correct rahe
-    if (sticker.userData.isCenter) {
-        showResult('Fixed Center', 'Centers cube ki orientation guide karte hain. Outer stickers par color bharein.');
-        return;
-    }
 
     sticker.userData.color = selectedColor;
     sticker.userData.edited = true;
@@ -340,16 +319,26 @@ function faceCoordinates(face, row, col) {
 
 function getFaceletString() {
     const faces = ['U', 'R', 'F', 'D', 'L', 'B'];
+    const centers = {};
 
-    // Centers standard mapping (U: white, D: yellow, F: green, B: blue, R: red, L: orange)
-    const colorToFace = {
-        white: 'U',
-        red: 'R',
-        green: 'F',
-        yellow: 'D',
-        orange: 'L',
-        blue: 'B'
-    };
+    // 1. Check all 6 centers
+    for (const face of faces) {
+        const coord = faceCoordinates(face, 1, 1);
+        const sticker = getSticker(face, coord.x, coord.y, coord.z);
+        if (!sticker) throw new Error('Center sticker missing.');
+        centers[face] = sticker.userData.color;
+    }
+
+    const centerColors = Object.values(centers);
+    if (new Set(centerColors).size !== 6) {
+        throw new Error('Har face ka centre alag colour ka hona chahiye (6 alag centres set karein).');
+    }
+
+    // Dynamic map: jo color jis center par hai, wo wahi face banega
+    const colorToFace = {};
+    faces.forEach(face => {
+        colorToFace[centers[face]] = face;
+    });
 
     let facelets = '';
 
@@ -359,14 +348,11 @@ function getFaceletString() {
                 const coord = faceCoordinates(face, row, col);
                 const sticker = getSticker(face, coord.x, coord.y, coord.z);
                 
-                if (!sticker) throw new Error('Sticker data missing.');
+                if (!sticker) throw new Error('Sticker missing.');
                 const color = sticker.userData.color;
 
-                if (color === 'blank') {
-                    throw new Error('Kuch stickers abhi khaali hain. Pehle saare stickers fill karein.');
-                }
                 if (!colorToFace[color]) {
-                    throw new Error('Unknown sticker colour detected.');
+                    throw new Error('Unknown sticker color: ' + color);
                 }
 
                 facelets += colorToFace[color];
@@ -389,9 +375,8 @@ function validateCube() {
         const faces = ['U', 'R', 'F', 'D', 'L', 'B'];
         for (const face of faces) {
             if (counts[face] !== 9) {
-                const colorNameMap = { U: 'White', R: 'Red', F: 'Green', D: 'Yellow', L: 'Orange', B: 'Blue' };
                 throw new Error(
-                    `${colorNameMap[face]} exactly 9 baar hona chahiye (Abhi: ${counts[face] || 0})`
+                    `Face '${face}' ke colour ke exactly 9 stickers hone chahiye (Abhi: ${counts[face] || 0})`
                 );
             }
         }
@@ -399,7 +384,7 @@ function validateCube() {
         validFacelets = facelets;
         document.getElementById('cube-status').textContent = 'Colours OK';
         document.getElementById('solve-button').disabled = false;
-        showResult('Colours verified!', 'Cube setup complete. Ab Solve My Cube button dabayein.');
+        showResult('Colours verified!', 'Cube setup valid hai! Ab Solve My Cube dabayein.');
         return true;
     } catch (error) {
         validFacelets = null;
@@ -421,7 +406,7 @@ function showResult(title, message) {
 async function loadSolver() {
     if (solverReady && CubeSolver) return CubeSolver;
 
-    showResult('Loading solver...', 'Solving algorithm tables prepare ho rahi hain...');
+    showResult('Loading solver...', 'Kociemba tables prepare ho rahi hain...');
     const module = await import('https://esm.sh/cubejs@1.3.2');
     const Cube = module.default || module.Cube || module;
 
@@ -751,7 +736,7 @@ document.querySelectorAll('.theme-btn').forEach(button => {
 
 // Initial Setup
 updateStickerCount();
-showResult('Ready to enter colours', 'Center piece ke according outer stickers par click karke colors bharein.');
+showResult('Ready to enter colours', 'Cube ke har face ke centres aur outer stickers par real cube ke mutabiq colours bharein.');
 document.getElementById('cube-status').textContent = 'Editing';
 document.getElementById('solve-button').disabled = true;
 
@@ -961,9 +946,6 @@ if (openScannerBtn) {
 
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
-                // Center piece ko skip karein kyunki center fixed hai
-                if (row === 1 && col === 1) continue;
-
                 const px = Math.floor(startX + col * step + step / 2);
                 const py = Math.floor(startY + row * step + step / 2);
                 const pixel = ctx.getImageData(px, py, 1, 1).data;
@@ -994,7 +976,7 @@ if (openScannerBtn) {
             scannerModal.style.display = 'none';
             window.resetView();
 
-            showResult('All 6 Faces Scanned!', 'Stickers scan ho chuke hain. CHECK MY CUBE dabakar verify karein.');
+            showResult('All 6 Faces Scanned!', 'Cube ke 54 stickers scan ho chuke hain. CHECK MY CUBE dabakar verify karein.');
             validateCube();
         }
     });
