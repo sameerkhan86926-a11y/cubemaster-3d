@@ -7,6 +7,15 @@
 <!-- Google AdSense Verification Code (Replace ca-pub-XXXXXXXXXXXXXXXX with your Client ID) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
+     <!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123XYZ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-ABC123XYZ0');
+</script>
+
 
 <!-- Meta Description -->
 <meta name="description" content="Solve your real 3x3 Rubik's Cube with CubeMaster 3D. Features real-time 6-face camera scanning, step-by-step 3D animated algorithms, and full offline PWA support.">
@@ -14,8 +23,8 @@
 <!-- Canonical Link -->
 <link rel="canonical" href="https://sameerkhan86926-a11y.github.io/cubemaster-3d/">
 
-<!-- CSP Protection -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;">
+<!-- Enhanced CSP Protection for AdSense & Three.js -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' blob:;">
 
 <!-- Schema Markup (JSON-LD) -->
 <script type="application/ld+json">
