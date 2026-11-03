@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0812">
+
+<!-- Google AdSense Verification Code -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4230023727229808" crossorigin="anonymous"></script>
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FP37NP9FYP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FP37NP9FYP');
+</script>
+
+<!-- Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://cdn.jsdelivr.net https://esm.sh; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googlesyndication.com https://esm.sh https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; object-src 'none'; base-uri 'self';">
+
+<meta name="description" content="Solve your real Pyraminx triangle puzzle with CubeMaster 3D. Interactive 3D tetrahedron visualization and step-by-step layer-by-layer solving guide.">
+<link rel="canonical" href="https://cubemaster-3d.online/pyraminx.html">
+
+<title>Pyraminx Solver - CubeMaster 3D</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <button id="menu-toggle-btn" class="menu-btn" aria-label="Toggle navigation menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">C</div>
+            <div>
+                <h2>CubeMaster<span>3D</span></h2>
+                <small>PYRAMINX SOLVER</small>
+            </div>
+        </a>
+    </div>
+
+    <div class="header-right">
+        <span class="status-dot"></span>
+        <span class="active-puzzle-tag" style="background: rgba(22, 201, 107, 0.15); color: #16c96b; border: 1px solid #16c96b; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">PYRAMINX LIVE</span>
+    </div>
+</header>
+
+<!-- DRAWER OVERLAY & NAV -->
+<div id="nav-overlay" class="nav-overlay"></div>
+
+<nav id="nav-drawer" class="nav-drawer">
+    <div class="drawer-header">
+        <div class="drawer-brand">
+            <div class="logo-icon">C</div>
+            <h3>CubeMaster<span>3D</span></h3>
+        </div>
+        <button id="menu-close-btn" class="close-drawer-btn" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="drawer-section">
+        <h4>SOLVER TOOLS</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="./index.html">
+                    <span class="puzzle-icon">🧊</span>
+                    <div class="nav-text">
+                        <strong>3×3 Cube Solver</strong>
+                        <small>Two-Phase Kociemba Engine</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li>
+                <a href="./2x2.html">
+                    <span class="puzzle-icon">🎲</span>
+                    <div class="nav-text">
+                        <strong>2×2 Pocket Cube</strong>
+                        <small>Ortega &amp; Optimal Solver</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li>
+                <a href="./4x4.html">
+                    <span class="puzzle-icon">🧱</span>
+                    <div class="nav-text">
+                        <strong>4×4 Rubik's Revenge</strong>
+                        <small>Reduction &amp; Parity Engine</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="./pyraminx.html">
+                    <span class="puzzle-icon">🔺</span>
+                    <div class="nav-text">
+                        <strong>Pyraminx Solver</strong>
+                        <small>Tetrahedron Algorithmic Guide</small>
+                    </div>
+                    <span class="badge-status live">LIVE</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="drawer-section">
+        <h4>PAGES &amp; TRANSPARENCY</h4>
+        <ul class="nav-links">
+            <li><a href="./about.html"><span class="puzzle-icon">👤</span><div class="nav-text"><strong>About Us &amp; Author</strong><small>Developer credentials</small></div></a></li>
+            <li><a href="./sitemap.html"><span class="puzzle-icon">🗺️</span><div class="nav-text"><strong>HTML Sitemap</strong><small>Quick directory</small></div></a></li>
+            <li><a href="./contact.html"><span class="puzzle-icon">📩</span><div class="nav-text"><strong>Contact Support</strong><small>Feedback &amp; bugs</small></div></a></li>
+            <li><a href="./disclaimer.html"><span class="puzzle-icon">📜</span><div class="nav-text"><strong>Disclaimer</strong><small>Trademark notice</small></div></a></li>
+        </ul>
+    </div>
+
+    <div class="drawer-footer">
+        <p>© 2026 CubeMaster 3D. All rights reserved.</p>
+    </div>
+</nav>
+
+<main class="container">
+
+    <section class="hero">
+        <span class="badge">TRIANGULAR PUZZLE SOLVER</span>
+        <h1>Solve Your <span>Pyraminx.</span></h1>
+        <p>
+            Enter your Pyraminx colours across 4 faces (36 stickers total, 9 per face), calculate tip alignments, and follow 3D animated step-by-step algorithms.
+        </p>
+    </section>
+
+    <!-- INSTRUCTIONS -->
+    <section class="instructions">
+        <div class="instruction-number">01</div>
+        <div>
+            <h3>Input 36 Facelet Colours</h3>
+            <p>
+                Rotate the 3D Pyraminx, choose your colour from the 4-color palette, and tap the triangular stickers to match your physical puzzle.
+            </p>
+        </div>
+    </section>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+
+        <!-- LEFT: 3D PYRAMINX -->
+        <section class="cube-section">
+            <div class="cube-topbar">
+                <div>
+                    <h3>Pyraminx 3D Model</h3>
+                    <p id="cube-mode-text">Tap triangles to change colour</p>
+                </div>
+                <span class="live-badge">● LIVE 3D</span>
+            </div>
+
+            <div id="cube-container">
+                <div id="loading">Loading Pyraminx...</div>
+            </div>
+
+            <div class="viewer-controls">
+                <button onclick="rotateView('left')">↶ Rotate</button>
+                <button onclick="rotateView('right')">Rotate ↷</button>
+                <button onclick="resetView()">Reset View</button>
+            </div>
+
+            <div class="cube-info">
+                <div>
+                    <small>EDITED STICKERS</small>
+                    <strong id="sticker-count">0 / 36</strong>
+                </div>
+                <div>
+                    <small>SELECTED COLOUR</small>
+                    <strong id="selected-colour">Red</strong>
+                </div>
+                <div>
+                    <small>STATUS</small>
+                    <strong id="cube-status">Editing</strong>
+                </div>
+            </div>
+
+            <!-- MOVE NOTATION -->
+            <div class="notation">
+                <h3>Pyraminx Notation</h3>
+                <div class="notation-grid">
+                    <div><strong>U</strong><span>Upper Vertex</span></div>
+                    <div><strong>L</strong><span>Left Vertex</span></div>
+                    <div><strong>R</strong><span>Right Vertex</span></div>
+                    <div><strong>B</strong><span>Back Vertex</span></div>
+                </div>
+                <p>
+                    <b>'</b> = Anticlockwise &nbsp; | &nbsp; 
+                    <b>u, l, r, b</b> = Trivial Tip Turn
+                </p>
+            </div>
+        </section>
+
+        <!-- RIGHT: CONTROLS + SOLVER -->
+        <aside class="side-panel">
+
+            <div class="panel-heading">
+                <h3>Choose Colour</h3>
+                <span>4-COLOR PALETTE</span>
+            </div>
+
+            <p class="small-help">
+                Pyraminx uses Red, Green, Blue, and Yellow faces.
+            </p>
+
+            <div class="color-palette">
+                <button class="color-option active" data-color="red">
+                    <span class="color-circle red"></span> Red
+                </button>
+                <button class="color-option" data-color="green">
+                    <span class="color-circle green"></span> Green
+                </button>
+                <button class="color-option" data-color="blue">
+                    <span class="color-circle blue"></span> Blue
+                </button>
+                <button class="color-option" data-color="yellow">
+                    <span class="color-circle yellow"></span> Yellow
+                </button>
+            </div>
+
+            <div class="important-note">
+                <strong>Pyraminx Structure</strong>
+                <p>
+                    A Pyraminx has 4 triangular faces with 9 stickers each (36 stickers total). Exactly 9 stickers of each colour must exist.
+                </p>
+            </div>
+
+            <!-- MAIN ACTIONS -->
+            <div class="action-buttons">
+                <button class="action-btn primary" id="check-button">
+                    CHECK PYRAMINX
+                </button>
+                <button class="action-btn solve-button" id="solve-button" disabled>
+                    SOLVE PYRAMINX
+                </button>
+                <button class="action-btn secondary" id="clear-button">
+                    RESET COLOURS
+                </button>
+            </div>
+
+            <!-- VALIDATION RESULT -->
+            <div class="result-panel" id="result-panel">
+                <div class="result-heading">
+                    <span class="badge">VALIDATION</span>
+                    <h3 id="result-title">Enter Pyraminx Colours</h3>
+                </div>
+                <p id="result-message">
+                    Fill all 36 stickers (9 of each colour) and press Check.
+                </p>
+            </div>
+
+            <!-- SOLVER PANEL -->
+            <section class="solver-panel" id="solver-panel" style="display: none;">
+                <div class="solver-header">
+                    <span class="badge">PYRAMINX SOLUTION</span>
+                    <h2>Step-by-Step Guide</h2>
+                    <p id="solution-progress">Solution will appear here.</p>
+                </div>
+
+                <div class="progress-track">
+                    <div id="progress-bar"></div>
+                </div>
+
+                <div class="current-step">
+                    <span id="step-number">READY</span>
+                    <div class="step-move-display" id="step-move">R</div>
+                    <h3 id="step-title">Your First Move</h3>
+                    <p id="step-description">Follow the move shown on the screen.</p>
+
+                    <div class="move-visual">
+                        <div class="move-arrow" id="move-arrow">↻</div>
+                        <div>
+                            <strong id="move-name">Right Vertex Turn</strong>
+                            <small>Rotate the right corner 120° clockwise.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="solution-controls">
+                    <button id="previous-step" disabled>← Previous</button>
+                    <button id="next-step" disabled>Next Step →</button>
+                </div>
+
+                <div class="solution-complete" id="solution-complete" style="display: none;">
+                    <h2>Pyraminx Solved!</h2>
+                    <p>Congratulations! Your Pyraminx triangle puzzle is solved.</p>
+                </div>
+            </section>
+
+        </aside>
+    </div>
+
+    <!-- SEO & EXPLANATORY SECTION -->
+    <section class="seo-content-section">
+        <h2>How to Solve the Pyraminx Triangle Puzzle</h2>
+        <p>
+            Invented by Uwe Mèffert, the Pyraminx is a regular tetrahedron puzzle with 4 faces, 4 corner tips, 4 center-axle pieces, and 6 edge pieces. Unlike square cubes where faces turn at 90° angles, Pyraminx layers rotate at 120° increments.
+        </p>
+
+        <h3>The Layer-by-Layer (LBL) Solving Method</h3>
+        <ul>
+            <li><strong>Stage 1 (Tips Orientation):</strong> Align the 4 trivial tips (u, l, r, b) to match their adjacent center pieces. Tips have no effect on other puzzle pieces.</li>
+            <li><strong>Stage 2 (Center Parity):</strong> Rotate the 4 center pieces until all three center stickers on a single face match one color.</li>
+            <li><strong>Stage 3 (First Layer Edges):</strong> Insert the 3 bottom edge pieces using intuitive sledgehammer algorithms (<code>R' L R L'</code>).</li>
+            <li><strong>Stage 4 (Last Layer Permutation):</strong> Cycle or flip the top 3 edges using standard Pyraminx algorithms to complete the puzzle.</li>
+        </ul>
+
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <details>
+            <summary>What is God's Number for the Pyraminx?</summary>
+            <p>Excluding the 4 trivial tips, any scrambled Pyraminx can be solved in a maximum of 11 moves. Including tips, God's Number is 15 moves.</p>
+        </details>
+        <details>
+            <summary>Are Pyraminx tips independent?</summary>
+            <p>Yes, each tip can only rotate in place and cannot be moved to any other corner of the tetrahedron.</p>
+        </details>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="./about.html">About Us</a>
+            <a href="./contact.html">Contact Us</a>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./terms.html">Terms of Service</a>
+            <a href="./disclaimer.html">Disclaimer</a>
+            <a href="./sitemap.html">Sitemap</a>
+        </div>
+        <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
+        <div class="footer-socials">
+            <a href="https://github.com/sameer7i" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+    </footer>
+
+</main>
+
+<script type="module" src="script-pyraminx.js"></script>
+
+</body>
+</html>
