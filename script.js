@@ -96,6 +96,15 @@ const colorNames = {
     orange: 'Orange'
 };
 
+const initialFaceColors = {
+    U: 'white',
+    D: 'yellow',
+    F: 'green',
+    B: 'blue',
+    R: 'red',
+    L: 'orange'
+};
+
 let selectedColor = 'white';
 
 const cubies = [];
@@ -138,7 +147,7 @@ function createCubelet(x, y, z) {
 
         if (!outer) return;
 
-        const colorKey = 'white';
+        const colorKey = initialFaceColors[face.face];
         const material = new THREE.MeshStandardMaterial({
             color: colorValues[colorKey],
             roughness: 0.3
@@ -388,11 +397,11 @@ function showResult(title, message) {
 // ========================================
 
 async function loadSolver() {
-    if (solverReady) return CubeSolver;
+    if (solverReady && CubeSolver) return CubeSolver;
 
     showResult('Loading solver...', 'Rubik’s Cube solving engine load ho raha hai...');
     const module = await import('https://esm.sh/cubejs@1.3.2');
-    CubeSolver = module.default || module.Cube;
+    CubeSolver = module.default || module.Cube || module;
 
     if (!CubeSolver) throw new Error('Solver library load nahi ho saki.');
     if (typeof CubeSolver.initSolver === 'function') {
@@ -715,7 +724,6 @@ document.getElementById('solve-button').disabled = true;
 // CUBE SHAPE / CURVE DESIGN SWITCHER
 // ========================================
 
-// 1. Rounded rectangle sticker generator
 function createRoundedRectGeometry(w, h, r, s) {
     const shape = new THREE.Shape();
     const x = -w / 2;
@@ -734,7 +742,6 @@ function createRoundedRectGeometry(w, h, r, s) {
     return new THREE.ShapeGeometry(shape, s);
 }
 
-// 2. Pre-calculated Geometries
 const shapeGeometries = {
     box: {
         body: new THREE.BoxGeometry(0.98, 0.98, 0.98),
@@ -754,7 +761,6 @@ function applyCubeShape(shapeKey) {
     const geo = shapeGeometries[shapeKey];
     if (!geo) return;
 
-    // Body shapes badalna
     cubies.forEach(cubie => {
         const bodyMesh = cubie.children[0];
         if (bodyMesh) {
@@ -763,14 +769,12 @@ function applyCubeShape(shapeKey) {
         }
     });
 
-    // Sticker shapes (flat vs rounded corners) badalna
     stickers.forEach(sticker => {
         sticker.geometry.dispose();
         sticker.geometry = geo.sticker;
     });
 }
 
-// Shape switch button click listener
 document.querySelectorAll('.shape-btn').forEach(button => {
     button.addEventListener('click', () => {
         document.querySelectorAll('.shape-btn').forEach(btn => btn.classList.remove('active'));
@@ -778,6 +782,7 @@ document.querySelectorAll('.shape-btn').forEach(button => {
         applyCubeShape(button.dataset.shape);
     });
 });
+
 // ========================================
 // REALISTIC CUBE SOUND (WEB AUDIO API)
 // ========================================
@@ -798,7 +803,6 @@ function playCubeTurnSound() {
         const filter = audioCtx.createBiquadFilter();
 
         osc.type = 'triangle';
-        // Pitch variation for natural click
         const baseFreq = 120 + Math.random() * 40;
         osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
@@ -819,7 +823,8 @@ function playCubeTurnSound() {
         // Audio policy ignore
     }
 }
-  // ========================================
+
+// ========================================
 // 6-FACE STEP-BY-STEP CAMERA SCANNER
 // ========================================
 const openScannerBtn = document.getElementById('open-scanner-btn');
@@ -831,7 +836,6 @@ const scanFaceName = document.getElementById('scan-face-name');
 
 let videoStream = null;
 
-// Scan order aur face rotation angles
 const scanSequence = [
     { face: 'F', name: 'FRONT (F)', rotY: 0, rotX: 0 },
     { face: 'R', name: 'RIGHT (R)', rotY: -Math.PI / 2, rotX: 0 },
@@ -851,7 +855,6 @@ function updateScanStepUI() {
         }
         captureFaceBtn.textContent = `CAPTURE ${current.face} FACE (${currentScanIndex + 1}/6)`;
 
-        // 3D cube ko auto-align karein taaki user ko screen par agla face dikhe
         cubeGroup.rotation.y = current.rotY;
         cubeGroup.rotation.x = current.rotX;
     }
@@ -882,7 +885,6 @@ if (openScannerBtn) {
         window.resetView();
     });
 
-    // Color Detector
     function getClosestCubeColor(r, g, b) {
         if (r > 160 && g > 160 && b > 160 && Math.abs(r - g) < 30 && Math.abs(r - b) < 30) {
             return 'white';
@@ -922,7 +924,6 @@ if (openScannerBtn) {
 
         const currentFace = scanSequence[currentScanIndex].face;
 
-        // Is face ke 9 stickers ko sample karke fill karein
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
                 const px = Math.floor(startX + col * step + step / 2);
@@ -946,11 +947,9 @@ if (openScannerBtn) {
 
         currentScanIndex++;
 
-        // Agar 6 faces poore nahi hue toh agla face mango
         if (currentScanIndex < scanSequence.length) {
             updateScanStepUI();
         } else {
-            // Saare 6 faces scan ho gaye
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
             }
@@ -962,6 +961,7 @@ if (openScannerBtn) {
         }
     });
 }
+
 // ========================================
 // VISUAL GUIDE COLLAPSIBLE TOGGLE
 // ========================================
@@ -975,6 +975,7 @@ if (guideToggleBtn && guideDrawer) {
         if (guideChevron) guideChevron.classList.toggle('open');
     });
 }
+
 // ========================================
 // COOKIE CONSENT BANNER LOGIC
 // ========================================
@@ -1002,4 +1003,3 @@ if (cookieBanner) {
         });
     }
 }
-
