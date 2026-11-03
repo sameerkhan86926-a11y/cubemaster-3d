@@ -64,14 +64,14 @@ if ('serviceWorker' in navigator) {
 
 <header class="header">
 
-    <div class="logo">
+    <a href="./index.html" class="logo" style="text-decoration: none; color: inherit;">
         <div class="logo-icon">C</div>
 
         <div>
             <h2>CubeMaster<span>3D</span></h2>
             <small>REAL CUBE SOLVER</small>
         </div>
-    </div>
+    </a>
 
     <div class="header-right">
         <span class="status-dot"></span>
@@ -481,6 +481,7 @@ if ('serviceWorker' in navigator) {
     <!-- 2. SEO CONTENT & FAQ SECTION (AdSense)   -->
     <!-- ======================================== -->
     <section class="seo-content-section">
+         
         <h2>How CubeMaster 3D Solves the Rubik's Cube</h2>
         <p>
             CubeMaster 3D utilizes advanced two-phase solving algorithms (Kociemba's algorithm) to compute 
@@ -488,6 +489,17 @@ if ('serviceWorker' in navigator) {
             Whether you use our real-time 6-face camera scanner or manually select the palette colors, 
             the system validates the permutation logic and ensures an accurate step-by-step 3D solution.
         </p>
+
+             <h3>Understanding the 3x3 Solving Layers</h3>
+    <p>
+        The Fridrich method (CFOP) and Kociemba's algorithm break the 54 facelet permutations into structured computational steps. Solving begins with establishing a cross on the primary face (typically White), resolving First Two Layers (F2L), Orienting the Last Layer (OLL), and Permuting the Last Layer (PLL). CubeMaster 3D streamlines this by calculating the most efficient path directly, keeping turn sequences below 22 half-turn moves on average.
+    </p>
+
+    <h3>Tips for Accurate Camera Scanning</h3>
+    <p>
+        Ensure steady ambient lighting without harsh reflections on glossy plastic stickers. Hold the cube 15–20 centimeters away from the lens, aligning the square grid boundaries squarely over each individual face. If lighting causes color confusion between Red and Orange, tap on the 3D model manually to correct any misidentified facelets before calculating.
+    </p>
+
 
         <h3>Beginner's Guide to Rubik's Cube Notations</h3>
         <ul>
@@ -518,7 +530,13 @@ if ('serviceWorker' in navigator) {
             <a href="./privacy.html">Privacy Policy</a>
             <a href="./terms.html">Terms of Service</a>
         </div>
+         
         <p class="copyright">© 2026 CubeMaster 3D. All rights reserved.</p>
+         <div class="footer-socials" style="margin-top: 10px;">
+    <a href="https://github.com/sameer7i" target="_blank" rel="noopener" style="color: #a879ff; margin: 0 8px; font-size: 13px;">GitHub</a>
+    <a href="https://instagram.com/sameer7i" target="_blank" rel="noopener" style="color: #a879ff; margin: 0 8px; font-size: 13px;">Instagram</a>
+</div>
+
     </footer>
 
 </main>
