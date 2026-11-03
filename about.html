@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - CubeMaster 3D</title>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="canonical" href="https://cubemaster-3d.online/about.html">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
         body { background: #0b0812; color: #d4d4d8; line-height: 1.7; padding: 40px 20px; }
@@ -16,13 +17,16 @@
         li { margin-bottom: 8px; font-size: 15px; }
         a { color: #a879ff; text-decoration: none; font-weight: 600; }
         a:hover { text-decoration: underline; }
-        .back-btn { display: inline-block; margin-top: 24px; padding: 10px 18px; background: #251b35; border: 1px solid #7946dc; border-radius: 8px; color: #fff; }
+        .back-btn { display: inline-block; margin-top: 24px; padding: 10px 18px; background: #251b35; border: 1px solid #7946dc; border-radius: 8px; color: #fff; transition: 0.2s ease; }
+        .back-btn:hover { background: #7946dc; text-decoration: none; }
+        .contact-box { background: #1c142c; border: 1px solid #2e2448; border-radius: 12px; padding: 18px 20px; margin-top: 24px; }
+        .contact-box h3 { color: #a879ff; font-size: 17px; margin-bottom: 6px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>About CubeMaster 3D</h1>
-        <p>Welcome to <strong>CubeMaster 3D</strong>, an interactive web-based 3D Rubik's Cube solving assistant designed to help cubers, enthusiasts, and learners master the classic 3x3 puzzle effortlessly.</p>
+        <p>Welcome to <strong>CubeMaster 3D</strong> (<a href="https://cubemaster-3d.online/">cubemaster-3d.online</a>), an interactive web-based 3D Rubik's Cube solving assistant designed to help cubers, enthusiasts, and learners master the classic 3x3 puzzle effortlessly.</p>
 
         <h2>Our Mission</h2>
         <p>Learning how to solve a Rubik's Cube using static notation charts can be frustrating. Our mission is to make algorithmic solutions accessible, visual, and intuitive through real-time 3D animation, interactive inspection, and camera-assisted color mapping.</p>
@@ -30,7 +34,7 @@
         <h2>Core Features</h2>
         <ul>
             <li><strong>Interactive 3D Engine:</strong> Powered by Three.js, offering fluid rotations, multiple themes, and customizable cube shapes (classic, rounded, and pillow).</li>
-            <li><strong>Algorithmic Precision:</strong> Integrates Kociemba's two-phase algorithm via standard solving engines to compute short, optimal move sequences.</li>
+            <li><strong>Algorithmic Precision:</strong> Integrates Kociemba's two-phase algorithm via solving engines to compute short, optimal move sequences.</li>
             <li><strong>Smart Camera Scanner:</strong> Step-by-step 6-face real-time optical scanning that detects facelet colors directly from your device camera.</li>
             <li><strong>Progressive Web App (PWA):</strong> Full offline usability with local caching, eliminating the need for continuous internet access once loaded.</li>
         </ul>
@@ -38,7 +42,15 @@
         <h2>Technology Stack</h2>
         <p>CubeMaster 3D is built entirely using open web standards: HTML5, CSS3, modern ES6 JavaScript, Web Audio API, and WebGL (Three.js), ensuring cross-platform responsiveness on desktops, tablets, and smartphones.</p>
 
-        <a href="./index.html" class="back-btn">← Back to Solver</a>
+        <h2>Publisher & Transparency</h2>
+        <p>CubeMaster 3D is an independently developed web application engineered to combine clean frontend development with algorithmic puzzle-solving logic. We are committed to maintaining privacy-conscious, client-side execution where user input and camera data stay entirely inside the local browser session.</p>
+
+        <div class="contact-box">
+            <h3>Get in Touch</h3>
+            <p>For questions, support, or partnership inquiries, contact us directly at <a href="mailto:cubemaster3d.contact@gmail.com">cubemaster3d.contact@gmail.com</a>.</p>
+        </div>
+
+        <a href="/index.html" class="back-btn">← Back to Solver</a>
     </div>
 </body>
 </html>
