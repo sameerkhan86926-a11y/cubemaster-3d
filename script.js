@@ -975,3 +975,31 @@ if (guideToggleBtn && guideDrawer) {
         if (guideChevron) guideChevron.classList.toggle('open');
     });
 }
+// ========================================
+// COOKIE CONSENT BANNER LOGIC
+// ========================================
+const cookieBanner = document.getElementById('cookie-banner');
+const cookieAcceptBtn = document.getElementById('cookie-accept-btn');
+const cookieDeclineBtn = document.getElementById('cookie-decline-btn');
+
+if (cookieBanner) {
+    const consent = localStorage.getItem('cookie_consent');
+    if (!consent) {
+        cookieBanner.style.display = 'block';
+    }
+
+    if (cookieAcceptBtn) {
+        cookieAcceptBtn.addEventListener('click', () => {
+            localStorage.setItem('cookie_consent', 'accepted');
+            cookieBanner.style.display = 'none';
+        });
+    }
+
+    if (cookieDeclineBtn) {
+        cookieDeclineBtn.addEventListener('click', () => {
+            localStorage.setItem('cookie_consent', 'declined');
+            cookieBanner.style.display = 'none';
+        });
+    }
+}
+
