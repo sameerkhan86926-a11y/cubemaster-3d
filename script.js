@@ -1023,3 +1023,27 @@ if (cookieBanner) {
         });
     }
 }
+const menuToggleBtn = document.getElementById('menu-toggle-btn');
+const menuCloseBtn = document.getElementById('menu-close-btn');
+const navDrawer = document.getElementById('nav-drawer');
+const navOverlay = document.getElementById('nav-overlay');
+
+if (menuToggleBtn) menuToggleBtn.addEventListener('click', () => {
+    navDrawer?.classList.add('open');
+    navOverlay?.classList.add('active');
+});
+if (menuCloseBtn) menuCloseBtn.addEventListener('click', () => {
+    navDrawer?.classList.remove('open');
+    navOverlay?.classList.remove('active');
+});
+if (navOverlay) navOverlay.addEventListener('click', () => {
+    navDrawer?.classList.remove('open');
+    navOverlay?.classList.remove('active');
+});
+
+window.notifyComingSoon = function(puzzleName) {
+    navDrawer?.classList.remove('open');
+    navOverlay?.classList.remove('active');
+    showResult('Upcoming Puzzle Engine', `${puzzleName} currently development me hai. Next major update me release hoga!`);
+};
+
