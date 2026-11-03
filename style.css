@@ -1286,4 +1286,105 @@ footer small {
     box-shadow: 0 4px 12px rgba(168, 121, 255, 0.25);
 }
 
+/* ========================================
+   COOKIE CONSENT BANNER STYLING
+======================================== */
+.cookie-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 820px;
+    background: rgba(18, 12, 30, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(168, 121, 255, 0.3);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    animation: slideUpFade 0.35s ease-out;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.cookie-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.cookie-content p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d4d4d8;
+}
+
+.cookie-content a {
+    color: #a879ff;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.cookie-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cookie-btn.accept {
+    background: linear-gradient(135deg, #a879ff, #7946dc);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(121, 70, 220, 0.35);
+}
+
+.cookie-btn.accept:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+.cookie-btn.decline {
+    background: rgba(255, 255, 255, 0.06);
+    color: #a1a1aa;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cookie-btn.decline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Mobile responsive */
+@media (max-width: 650px) {
+    .cookie-content {
+        flex-direction: column;
+        text-align: left;
+    }
+    .cookie-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
 
