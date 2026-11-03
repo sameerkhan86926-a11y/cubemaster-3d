@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
 
+# Google AdSense Crawler
+User-agent: Mediapartners-Google
+Allow: /
+
+# Google AdSense Bot
+User-agent: AdsBot-Google
+Allow: /
+
 Sitemap: https://cubemaster-3d.online/sitemap.xml
