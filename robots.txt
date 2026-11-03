@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sameerkhan86926-a11y.github.io/cubemaster-3d/sitemap.xml
+Sitemap: https://cubemaster-3d.online/sitemap.xml
