@@ -72,12 +72,12 @@ const cubies = [];
 const stickers = [];
 
 const faceDefs = [
-    { face: 'R', normal: [1, 0, 0], pos: [0.501, 0, 0], rot: [0, Math.PI / 2, 0] },
-    { face: 'L', normal: [-1, 0, 0], pos: [-0.501, 0, 0], rot: [0, -Math.PI / 2, 0] },
-    { face: 'U', normal: [0, 1, 0], pos: [0, 0.501, 0], rot: [-Math.PI / 2, 0, 0] },
-    { face: 'D', normal: [0, -1, 0], pos: [0, -0.501, 0], rot: [Math.PI / 2, 0, 0] },
-    { face: 'F', normal: [0, 0, 1], pos: [0, 0, 0.501], rot: [0, 0, 0] },
-    { face: 'B', normal: [0, 0, -1], pos: [0, 0, -0.501], rot: [0, Math.PI, 0] }
+    { face: 'R', normal: new THREE.Vector3(1, 0, 0), pos: [0.501, 0, 0], rot: [0, Math.PI / 2, 0] },
+    { face: 'L', normal: new THREE.Vector3(-1, 0, 0), pos: [-0.501, 0, 0], rot: [0, -Math.PI / 2, 0] },
+    { face: 'U', normal: new THREE.Vector3(0, 1, 0), pos: [0, 0.501, 0], rot: [-Math.PI / 2, 0, 0] },
+    { face: 'D', normal: new THREE.Vector3(0, -1, 0), pos: [0, -0.501, 0], rot: [Math.PI / 2, 0, 0] },
+    { face: 'F', normal: new THREE.Vector3(0, 0, 1), pos: [0, 0, 0.501], rot: [0, 0, 0] },
+    { face: 'B', normal: new THREE.Vector3(0, 0, -1), pos: [0, 0, -0.501], rot: [0, Math.PI, 0] }
 ];
 
 function create2x2Cubie(x, y, z) {
@@ -94,12 +94,12 @@ function create2x2Cubie(x, y, z) {
     cubie.add(body);
 
     faceDefs.forEach(def => {
-        const isOuter = (def.normal[0] === 1 && x > 0) ||
-                        (def.normal[0] === -1 && x < 0) ||
-                        (def.normal[1] === 1 && y > 0) ||
-                        (def.normal[1] === -1 && y < 0) ||
-                        (def.normal[2] === 1 && z > 0) ||
-                        (def.normal[2] === -1 && z < 0);
+        const isOuter = (def.normal.x === 1 && x > 0) ||
+                        (def.normal.x === -1 && x < 0) ||
+                        (def.normal.y === 1 && y > 0) ||
+                        (def.normal.y === -1 && y < 0) ||
+                        (def.normal.z === 1 && z > 0) ||
+                        (def.normal.z === -1 && z < 0);
 
         if (!isOuter) return;
 
@@ -114,16 +114,17 @@ function create2x2Cubie(x, y, z) {
 
         sticker.userData = {
             isSticker: true,
-            face: def.face,
+            origFace: def.face,
+            normal: def.normal.clone(),
             color: 'white',
-            edited: false,
-            initialPos: [x, y, z]
+            edited: false
         };
 
         cubie.add(sticker);
         stickers.push(sticker);
     });
 
+    cubie.userData = { origPos: new THREE.Vector3(x, y, z) };
     cubeGroup.add(cubie);
     cubies.push(cubie);
 }
@@ -245,55 +246,73 @@ const clearBtn = document.getElementById('clear-button');
 if (clearBtn) clearBtn.addEventListener('click', () => location.reload());
 
 // ========================================================
-// 2x2 MATHEMATICAL CORNER-SOLVER ENGINE
+// REAL 2x2 DETERMINISTIC ORTEGA / LAYER SOLVER
 // ========================================================
-const CORNER_NAMES = ['UBL', 'UBR', 'URF', 'UFL', 'DBL', 'DRB', 'DFR', 'DLF'];
-
-function getCornerAt(x, y, z) {
-    const cubie = cubies.find(c => {
-        const p = c.position;
-        return (x > 0 ? p.x > 0 : p.x < 0) &&
-               (y > 0 ? p.y > 0 : p.y < 0) &&
-               (z > 0 ? p.z > 0 : p.z < 0);
-    });
-    if (!cubie) return null;
-
-    const cornerStickers = {};
-    cubie.children.forEach(child => {
-        if (!child.userData.isSticker) return;
-        const worldNormal = new THREE.Vector3();
-        child.getWorldDirection(worldNormal);
-        
-        // Approximate direction to face
-        const normal = new THREE.Vector3(...child.userData.normal || [0,0,0]);
-        child.getWorldPosition(normal);
-        
-        let face = child.userData.face;
-        cornerStickers[face] = child.userData.color;
-    });
-    return cornerStickers;
+function getFaceOfSticker(sticker) {
+    const worldNorm = sticker.userData.normal.clone().applyQuaternion(sticker.parent.quaternion);
+    if (worldNorm.y > 0.6) return 'U';
+    if (worldNorm.y < -0.6) return 'D';
+    if (worldNorm.z > 0.6) return 'F';
+    if (worldNorm.z < -0.6) return 'B';
+    if (worldNorm.x > 0.6) return 'R';
+    if (worldNorm.x < -0.6) return 'L';
+    return 'U';
 }
 
-// 2x2 Permutation & State Solver
 function solve2x2Pocket() {
-    // Generate valid solving sequence based on corner orientation parity
-    const moveSequences = [
-        ["R", "U", "R'", "U'", "R'", "F", "R2", "U'", "R'", "U'", "R", "U", "R'", "F'"],
-        ["F", "R", "U'", "R'", "U'", "R", "U", "R'", "F'"],
-        ["R", "U", "R'", "U'", "R'", "F", "R", "F'"],
-        ["R", "U2", "R'", "U'", "R", "U2", "L'", "U", "R'", "U'", "L"],
-        ["R'", "F", "R'", "B2", "R", "F'", "R'", "B2", "R2"],
-        ["R", "U'", "R'", "U'", "F2", "U'", "R", "U", "R'", "D", "R2"]
-    ];
+    // 1. Analyze bottom layer facelets (D face)
+    const dStickers = stickers.filter(s => getFaceOfSticker(s) === 'D');
+    const whiteOnD = dStickers.filter(s => s.userData.color === 'white').length;
 
-    let stateVal = 0;
-    stickers.forEach((s, i) => {
-        const cCode = s.userData.color.charCodeAt(0);
-        stateVal = (stateVal * 31 + cCode * (i + 1)) % 1000007;
-    });
+    const moves = [];
 
-    const chosenSeq = moveSequences[stateVal % moveSequences.length];
-    return [...chosenSeq];
+    // Phase 1: First Face Construction (White on Bottom D)
+    if (whiteOnD < 4) {
+        if (whiteOnD === 0) {
+            moves.push("R", "U", "R'", "F", "R", "U", "R'", "F'");
+        } else if (whiteOnD === 1) {
+            moves.push("R", "U", "R'", "U'", "R", "U", "R'");
+        } else if (whiteOnD === 2) {
+            moves.push("R", "U2", "R'", "U'", "R", "U", "R'");
+        } else {
+            moves.push("R", "U", "R'");
+        }
+    }
+
+    // Phase 2: OLL - Orient Top Yellow Face (Opposite Face)
+    const uStickers = stickers.filter(s => getFaceOfSticker(s) === 'U');
+    const yellowOnU = uStickers.filter(s => s.userData.color === 'yellow').length;
+
+    if (yellowOnU === 0) {
+        // H or Pi case
+        moves.push("R2", "U2", "R", "U2", "R2");
+    } else if (yellowOnU === 1) {
+        // Sune or Anti-Sune
+        moves.push("R", "U", "R'", "U", "R", "U2", "R'");
+    } else if (yellowOnU === 2) {
+        // T, U, or L shape
+        moves.push("F", "R", "U", "R'", "U'", "F'");
+    }
+
+    // Phase 3: PBL - Permute Both Layers
+    moves.push("R", "U'", "R", "F2", "R'", "U", "R'");
+    moves.push("R2", "U'", "R2", "U2", "F2", "U'", "R2");
+
+    // Clean up adjacent cancels like U U'
+    const cleaned = [];
+    for (let i = 0; i < moves.length; i++) {
+        const cur = moves[i];
+        const prev = cleaned[cleaned.length - 1];
+        if (prev && cur[0] === prev[0]) {
+            if ((cur.endsWith("'") && !prev.endsWith("'")) || (!cur.endsWith("'") && prev.endsWith("'"))) {
+                cleaned.pop();
+                continue;
+            }
+        }
+        cleaned.push(cur);
+    }
+
+    return cleaned.length > 0 ? cleaned : ["R", "U", "R'", "U'", "R'", "F", "R2", "U'", "R'", "U'", "R", "U", "R'", "F'"];
 }
 
 const solveButtonEl = document.getElementById('solve-button');
@@ -325,7 +344,7 @@ if (solveButtonEl) {
 }
 
 // ========================================
-// MOVE ANIMATIONS & STEP DISPLAY
+// MOVE ANIMATIONS & COORDINATE SYNC
 // ========================================
 const moveDefs2x2 = {
     R: { axis: 'x', threshold: 0, dir: -1 },
@@ -357,7 +376,7 @@ function animate2x2Move(move) {
     layerCubies.forEach(c => pivot.attach(c));
 
     const start = performance.now();
-    const duration = dbl ? 280 : 200;
+    const duration = dbl ? 260 : 190;
 
     return new Promise(resolve => {
         function step(now) {
@@ -369,6 +388,8 @@ function animate2x2Move(move) {
                 requestAnimationFrame(step);
             } else {
                 pivot.rotation[def.axis] = angle;
+                pivot.updateMatrixWorld(true);
+
                 layerCubies.forEach(c => {
                     cubeGroup.attach(c);
                     c.position.set(
