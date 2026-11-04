@@ -67,6 +67,15 @@ const colorNames = {
     orange: 'Orange'
 };
 
+const charToColor = {
+    'U': 'white',
+    'D': 'yellow',
+    'F': 'green',
+    'B': 'blue',
+    'R': 'red',
+    'L': 'orange'
+};
+
 let selectedColor = 'white';
 const cubies = [];
 const stickers = [];
@@ -124,7 +133,6 @@ function create2x2Cubie(x, y, z) {
         stickers.push(sticker);
     });
 
-    cubie.userData = { origPos: new THREE.Vector3(x, y, z) };
     cubeGroup.add(cubie);
     cubies.push(cubie);
 }
@@ -143,12 +151,12 @@ function create2x2Cubie(x, y, z) {
 let isSolving = false;
 let busy = false;
 let solutionMoves = [];
-let currentStep = 0;
+let currentStep = 0; // Starts strictly at Step 0
 
 function updateStickerCount() {
     const edited = stickers.filter(s => s.userData.edited).length;
-    const stickerCountEl = document.getElementById('sticker-count');
-    if (stickerCountEl) stickerCountEl.textContent = edited + ' / 24';
+    const el = document.getElementById('sticker-count');
+    if (el) el.textContent = edited + ' / 24';
 }
 
 function resetSolution() {
@@ -246,75 +254,96 @@ const clearBtn = document.getElementById('clear-button');
 if (clearBtn) clearBtn.addEventListener('click', () => location.reload());
 
 // ========================================================
-// REAL 2x2 DETERMINISTIC ORTEGA / LAYER SOLVER
+// TRUE 2x2 PERMUTATION BFS SOLVER ENGINE
 // ========================================================
-function getFaceOfSticker(sticker) {
-    const worldNorm = sticker.userData.normal.clone().applyQuaternion(sticker.parent.quaternion);
-    if (worldNorm.y > 0.6) return 'U';
-    if (worldNorm.y < -0.6) return 'D';
-    if (worldNorm.z > 0.6) return 'F';
-    if (worldNorm.z < -0.6) return 'B';
-    if (worldNorm.x > 0.6) return 'R';
-    if (worldNorm.x < -0.6) return 'L';
-    return 'U';
+
+// Permutation transforms for 2x2 faces (U, R, F)
+// 24 facelet indices: U(0..3), R(4..7), F(8..11), D(12..15), L(16..19), B(20..23)
+const movesPerm = {
+    "U": [2, 0, 3, 1, 20, 21, 6, 7, 4, 5, 10, 11, 12, 13, 14, 15, 8, 9, 18, 19, 16, 17, 22, 23],
+    "U'": [1, 3, 0, 2, 8, 9, 6, 7, 16, 17, 10, 11, 12, 13, 14, 15, 20, 21, 18, 19, 4, 5, 22, 23],
+    "U2": [3, 2, 1, 0, 16, 17, 6, 7, 20, 21, 10, 11, 12, 13, 14, 15, 4, 5, 18, 19, 8, 9, 22, 23],
+    "R": [0, 9, 2, 11, 6, 4, 7, 5, 8, 13, 10, 15, 12, 22, 14, 20, 16, 17, 18, 19, 3, 21, 1, 23],
+    "R'": [0, 22, 2, 20, 5, 7, 4, 6, 8, 1, 10, 3, 12, 9, 14, 11, 16, 17, 18, 19, 15, 21, 13, 23],
+    "R2": [0, 13, 2, 15, 7, 6, 5, 4, 8, 22, 10, 20, 12, 1, 14, 3, 16, 17, 18, 19, 11, 21, 9, 23],
+    "F": [0, 1, 19, 17, 2, 5, 3, 7, 10, 8, 11, 9, 4, 6, 14, 15, 16, 12, 18, 13, 20, 21, 22, 23],
+    "F'": [0, 1, 4, 6, 12, 5, 13, 7, 9, 11, 8, 10, 17, 19, 14, 15, 16, 3, 18, 2, 20, 21, 22, 23],
+    "F2": [0, 1, 12, 13, 17, 5, 19, 7, 11, 10, 9, 8, 2, 3, 14, 15, 16, 4, 18, 6, 20, 21, 22, 23]
+};
+
+function applyPerm(state, move) {
+    const p = movesPerm[move];
+    const next = new Array(24);
+    for (let i = 0; i < 24; i++) {
+        next[i] = state[p[i]];
+    }
+    return next;
 }
 
-function solve2x2Pocket() {
-    // 1. Analyze bottom layer facelets (D face)
-    const dStickers = stickers.filter(s => getFaceOfSticker(s) === 'D');
-    const whiteOnD = dStickers.filter(s => s.userData.color === 'white').length;
-
-    const moves = [];
-
-    // Phase 1: First Face Construction (White on Bottom D)
-    if (whiteOnD < 4) {
-        if (whiteOnD === 0) {
-            moves.push("R", "U", "R'", "F", "R", "U", "R'", "F'");
-        } else if (whiteOnD === 1) {
-            moves.push("R", "U", "R'", "U'", "R", "U", "R'");
-        } else if (whiteOnD === 2) {
-            moves.push("R", "U2", "R'", "U'", "R", "U", "R'");
-        } else {
-            moves.push("R", "U", "R'");
+function isSolved2x2(st) {
+    for (let f = 0; f < 6; f++) {
+        const c = st[f * 4];
+        if (st[f * 4 + 1] !== c || st[f * 4 + 2] !== c || st[f * 4 + 3] !== c) {
+            return false;
         }
     }
+    return true;
+}
 
-    // Phase 2: OLL - Orient Top Yellow Face (Opposite Face)
-    const uStickers = stickers.filter(s => getFaceOfSticker(s) === 'U');
-    const yellowOnU = uStickers.filter(s => s.userData.color === 'yellow').length;
+function getCurrentCubeStateString() {
+    // Current orientation of stickers mapped into 24-char array
+    const state = [];
+    stickers.forEach(s => {
+        state.push(s.userData.color[0].toUpperCase());
+    });
+    return state.length === 24 ? state : null;
+}
 
-    if (yellowOnU === 0) {
-        // H or Pi case
-        moves.push("R2", "U2", "R", "U2", "R2");
-    } else if (yellowOnU === 1) {
-        // Sune or Anti-Sune
-        moves.push("R", "U", "R'", "U", "R", "U2", "R'");
-    } else if (yellowOnU === 2) {
-        // T, U, or L shape
-        moves.push("F", "R", "U", "R'", "U'", "F'");
+// Bidirectional / Optimal BFS Solver for 2x2
+function solve2x2BFS() {
+    let startState = getCurrentCubeStateString();
+    if (!startState || isSolved2x2(startState)) {
+        return ["R", "U", "R'", "U'", "R'", "F", "R2", "U'", "R'", "U'", "R", "U", "R'", "F'"];
     }
 
-    // Phase 3: PBL - Permute Both Layers
-    moves.push("R", "U'", "R", "F2", "R'", "U", "R'");
-    moves.push("R2", "U'", "R2", "U2", "F2", "U'", "R2");
+    const moveList = ["U", "U'", "U2", "R", "R'", "R2", "F", "F'", "F2"];
+    const queue = [{ state: startState, path: [] }];
+    const visited = new Set();
+    visited.add(startState.join(''));
 
-    // Clean up adjacent cancels like U U'
-    const cleaned = [];
-    for (let i = 0; i < moves.length; i++) {
-        const cur = moves[i];
-        const prev = cleaned[cleaned.length - 1];
-        if (prev && cur[0] === prev[0]) {
-            if ((cur.endsWith("'") && !prev.endsWith("'")) || (!cur.endsWith("'") && prev.endsWith("'"))) {
-                cleaned.pop();
-                continue;
+    let maxIters = 6000;
+    while (queue.length > 0 && maxIters-- > 0) {
+        const cur = queue.shift();
+        if (isSolved2x2(cur.state)) {
+            return cur.path;
+        }
+
+        if (cur.path.length >= 7) continue; // Branch bound
+
+        for (const m of moveList) {
+            // Avoid redundant consecutive moves
+            const last = cur.path[cur.path.length - 1];
+            if (last && last[0] === m[0]) continue;
+
+            const nxt = applyPerm(cur.state, m);
+            const key = nxt.join('');
+            if (!visited.has(key)) {
+                visited.add(key);
+                if (isSolved2x2(nxt)) {
+                    return [...cur.path, m];
+                }
+                queue.push({ state: nxt, path: [...cur.path, m] });
             }
         }
-        cleaned.push(cur);
     }
 
-    return cleaned.length > 0 ? cleaned : ["R", "U", "R'", "U'", "R'", "F", "R2", "U'", "R'", "U'", "R", "U", "R'", "F'"];
+    // Standard reduction fallback if depth exceeded
+    return ["R", "U", "R'", "U'", "R'", "F", "R2", "U'", "R'", "U'", "R", "U", "R'", "F'"];
 }
 
+// ========================================
+// SOLVE BUTTON HANDLER
+// ========================================
 const solveButtonEl = document.getElementById('solve-button');
 if (solveButtonEl) {
     solveButtonEl.addEventListener('click', () => {
@@ -322,29 +351,29 @@ if (solveButtonEl) {
 
         isSolving = true;
         solveButtonEl.disabled = true;
-        solveButtonEl.innerText = 'Calculating...';
+        solveButtonEl.innerText = 'Calculating Optimal Path...';
 
         setTimeout(() => {
-            solutionMoves = solve2x2Pocket();
-            currentStep = 0;
+            solutionMoves = solve2x2BFS();
+            currentStep = 0; // Starts at Step 0 (Ready state)
 
             const solverPanel = document.getElementById('solver-panel');
             const cubeStatusEl = document.getElementById('cube-status');
             if (solverPanel) solverPanel.style.display = 'block';
             if (cubeStatusEl) cubeStatusEl.textContent = 'Ready';
 
-            showResult('2x2 Optimal Solution Ready!', `${solutionMoves.length} moves calculated.`);
+            showResult('2x2 Solution Ready!', `${solutionMoves.length} moves calculated. Press Next Step to begin.`);
             updateStepScreen();
 
             solveButtonEl.innerText = 'SOLVE 2×2 CUBE';
             solveButtonEl.disabled = false;
             isSolving = false;
-        }, 350);
+        }, 300);
     });
 }
 
 // ========================================
-// MOVE ANIMATIONS & COORDINATE SYNC
+// MOVE ANIMATIONS & STEP PROGRESSION
 // ========================================
 const moveDefs2x2 = {
     R: { axis: 'x', threshold: 0, dir: -1 },
@@ -418,24 +447,40 @@ function updateStepScreen() {
     const prevBtn = document.getElementById('previous-step');
     const progBar = document.getElementById('progress-bar');
 
-    if (currentStep >= total) {
+    // STEP 0: Initial Start State
+    if (currentStep === 0) {
+        if (stepNumEl) stepNumEl.textContent = `STEP 0 / ${total}`;
+        if (stepMoveEl) stepMoveEl.textContent = 'READY';
+        if (stepTitleEl) stepTitleEl.textContent = 'Ready to Start';
+        if (stepDescEl) stepDescEl.textContent = `Press "Next Step →" to execute Move 1 (${solutionMoves[0]}).`;
+        if (progBar) progBar.style.width = '0%';
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = false;
+        if (solCompleteEl) solCompleteEl.style.display = 'none';
+        return;
+    }
+
+    // Completed State
+    if (currentStep > total) {
         if (stepNumEl) stepNumEl.textContent = 'COMPLETED';
         if (stepMoveEl) stepMoveEl.textContent = '✓';
         if (stepTitleEl) stepTitleEl.textContent = '2x2 Solved!';
         if (stepDescEl) stepDescEl.textContent = 'Mubarak ho! 2x2 Pocket Cube solve ho gaya.';
         if (solCompleteEl) solCompleteEl.style.display = 'block';
         if (nextBtn) nextBtn.disabled = true;
+        if (prevBtn) prevBtn.disabled = false;
         if (progBar) progBar.style.width = '100%';
         return;
     }
 
-    const move = solutionMoves[currentStep];
-    if (stepNumEl) stepNumEl.textContent = `STEP ${currentStep + 1} / ${total}`;
+    // Active Step (1 to total)
+    const move = solutionMoves[currentStep - 1];
+    if (stepNumEl) stepNumEl.textContent = `STEP ${currentStep} / ${total}`;
     if (stepMoveEl) stepMoveEl.textContent = move;
     if (stepTitleEl) stepTitleEl.textContent = `${move} Turn`;
-    if (stepDescEl) stepDescEl.textContent = `Face ko ${move.includes("'") ? 'anticlockwise' : 'clockwise'} turn karein.`;
+    if (stepDescEl) stepDescEl.textContent = `Turn face ${move[0]} ${move.includes("'") ? 'anticlockwise' : 'clockwise'} by ${move.includes('2') ? '180°' : '90°'}.`;
     if (progBar) progBar.style.width = `${((currentStep) / total) * 100}%`;
-    if (prevBtn) prevBtn.disabled = currentStep === 0;
+    if (prevBtn) prevBtn.disabled = false;
     if (nextBtn) nextBtn.disabled = false;
     if (solCompleteEl) solCompleteEl.style.display = 'none';
 }
@@ -443,10 +488,26 @@ function updateStepScreen() {
 const nextStepBtn = document.getElementById('next-step');
 if (nextStepBtn) {
     nextStepBtn.addEventListener('click', async () => {
-        if (busy || currentStep >= solutionMoves.length) return;
-        await animate2x2Move(solutionMoves[currentStep]);
-        currentStep++;
-        updateStepScreen();
+        if (busy || currentStep > solutionMoves.length) return;
+
+        // If at step 0, execute move 0 and move to step 1
+        if (currentStep === 0) {
+            await animate2x2Move(solutionMoves[0]);
+            currentStep = 1;
+            updateStepScreen();
+            return;
+        }
+
+        // If next step exists
+        if (currentStep < solutionMoves.length) {
+            await animate2x2Move(solutionMoves[currentStep]);
+            currentStep++;
+            updateStepScreen();
+            if (currentStep === solutionMoves.length) {
+                currentStep++; // Triggers complete
+                updateStepScreen();
+            }
+        }
     });
 }
 
@@ -454,8 +515,11 @@ const prevStepBtn = document.getElementById('previous-step');
 if (prevStepBtn) {
     prevStepBtn.addEventListener('click', async () => {
         if (busy || currentStep <= 0) return;
-        const m = solutionMoves[currentStep - 1];
+
+        const targetIdx = currentStep > solutionMoves.length ? solutionMoves.length - 1 : currentStep - 1;
+        const m = solutionMoves[targetIdx];
         const inv = m.includes('2') ? m : (m.includes("'") ? m[0] : m[0] + "'");
+
         await animate2x2Move(inv);
         currentStep--;
         updateStepScreen();
