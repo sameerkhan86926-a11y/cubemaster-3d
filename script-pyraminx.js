@@ -53,7 +53,7 @@ const colorValues = {
     green: 0x16c96b,
     blue: 0x2676ff,
     yellow: 0xffeb00,
-    white: 0xf5f5f7
+    white: 0xf4f4f6
 };
 
 const colorNames = {
@@ -74,38 +74,20 @@ const V1 = new THREE.Vector3(-s, -s * 0.5, s * 0.7);   // Front-Left
 const V2 = new THREE.Vector3(s, -s * 0.5, s * 0.7);    // Front-Right
 const V3 = new THREE.Vector3(0, -s * 0.5, -s * 0.9);   // Back Vertex
 
-// Black Core Tetrahedron Mesh (provides visible dark border lines in gaps)
-const coreGeom = new THREE.TetrahedronGeometry(s * 0.985);
-const coreMat = new THREE.MeshBasicMaterial({ color: 0x09070f });
-const coreMesh = new THREE.Mesh(coreGeom, coreMat);
-coreMesh.rotation.x = 0.35;
-pyraminxGroup.add(coreMesh);
-
-// Function to create an individual triangular sticker with black border lines
+// Function to create an individual triangular sticker with neat seam borders
 function createTriangleSticker(v1, v2, v3, faceIndex, stickerIdx) {
-    // Calculate centroid of this mini-triangle
-    const centroid = new THREE.Vector3()
-        .add(v1).add(v2).add(v3)
-        .divideScalar(3);
-
-    // Apply scale inset (0.91) towards centroid so stickers don't touch, leaving clear dark lines
-    const inset = 0.91;
-    const p1 = new THREE.Vector3().lerpVectors(centroid, v1, inset);
-    const p2 = new THREE.Vector3().lerpVectors(centroid, v2, inset);
-    const p3 = new THREE.Vector3().lerpVectors(centroid, v3, inset);
-
     const geom = new THREE.BufferGeometry();
     const vertices = new Float32Array([
-        p1.x, p1.y, p1.z,
-        p2.x, p2.y, p2.z,
-        p3.x, p3.y, p3.z
+        v1.x, v1.y, v1.z,
+        v2.x, v2.y, v2.z,
+        v3.x, v3.y, v3.z
     ]);
     geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     geom.computeVertexNormals();
 
     const mat = new THREE.MeshStandardMaterial({
         color: colorValues.white,
-        roughness: 0.3,
+        roughness: 0.35,
         metalness: 0.05,
         side: THREE.DoubleSide
     });
@@ -119,17 +101,17 @@ function createTriangleSticker(v1, v2, v3, faceIndex, stickerIdx) {
         edited: false
     };
 
-    // Sharp dark outer outline for each triangular facelet
+    // Clean dark border line around every triangle to clearly show puzzle faces & slots
     const edgeGeom = new THREE.BufferGeometry();
     const lineVertices = new Float32Array([
-        p1.x, p1.y, p1.z,  p2.x, p2.y, p2.z,
-        p2.x, p2.y, p2.z,  p3.x, p3.y, p3.z,
-        p3.x, p3.y, p3.z,  p1.x, p1.y, p1.z
+        v1.x, v1.y, v1.z,  v2.x, v2.y, v2.z,
+        v2.x, v2.y, v2.z,  v3.x, v3.y, v3.z,
+        v3.x, v3.y, v3.z,  v1.x, v1.y, v1.z
     ]);
     edgeGeom.setAttribute('position', new THREE.BufferAttribute(lineVertices, 3));
     const edgeLine = new THREE.LineSegments(
         edgeGeom,
-        new THREE.LineBasicMaterial({ color: 0x1f172e, linewidth: 2 })
+        new THREE.LineBasicMaterial({ color: 0x221a30, linewidth: 2 })
     );
     mesh.add(edgeLine);
 
@@ -161,24 +143,12 @@ function subdivideFace(A, B, C, faceIndex) {
                 p3 = new THREE.Vector3().lerpVectors(A, B, rowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, rowFraction), (colIdx + 1) / r);
             }
 
-            // Normal offset to elevate stickers slightly above core
-            const normal = new THREE.Vector3().crossVectors(
-                new THREE.Vector3().subVectors(B, A),
-                new THREE.Vector3().subVectors(C, A)
-            ).normalize().multiplyScalar(0.035);
-
-            createTriangleSticker(
-                p1.clone().add(normal),
-                p2.clone().add(normal),
-                p3.clone().add(normal),
-                faceIndex,
-                stickerCount++
-            );
+            createTriangleSticker(p1, p2, p3, faceIndex, stickerCount++);
         }
     }
 }
 
-// Build 4 Faces (36 total stickers with prominent line separations)
+// Build 4 Faces (36 total stickers)
 subdivideFace(V0, V1, V2, 0); // Face 0 (Front)
 subdivideFace(V0, V2, V3, 1); // Face 1 (Right)
 subdivideFace(V0, V3, V1, 2); // Face 2 (Left)
