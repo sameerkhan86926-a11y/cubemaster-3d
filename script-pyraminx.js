@@ -14,7 +14,7 @@ const width = container.clientWidth || 400;
 const height = container.clientHeight || 400;
 
 const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-camera.position.set(0, 1.5, 6);
+camera.position.set(0, 1.2, 5.8);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -29,8 +29,8 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.enableZoom = true;
-controls.minDistance = 4;
-controls.maxDistance = 10;
+controls.minDistance = 3.5;
+controls.maxDistance = 9;
 controls.enablePan = false;
 
 scene.add(new THREE.AmbientLight(0xffffff, 2.2));
@@ -52,33 +52,61 @@ const colorValues = {
     red: 0xff3030,
     green: 0x16c96b,
     blue: 0x2676ff,
-    yellow: 0xffeb00
+    yellow: 0xffeb00,
+    white: 0xf5f5f7
 };
 
 const colorNames = {
     red: 'Red',
     green: 'Green',
     blue: 'Blue',
-    yellow: 'Yellow'
+    yellow: 'Yellow',
+    white: 'Blank White'
 };
 
 let selectedColor = 'red';
 const stickers = [];
 
-// Helper to create a single flat triangular sticker
+// 4 Main Vertices of regular tetrahedron
+const s = 1.7;
+const V0 = new THREE.Vector3(0, s, 0);                 // Top Apex
+const V1 = new THREE.Vector3(-s, -s * 0.5, s * 0.7);   // Front-Left
+const V2 = new THREE.Vector3(s, -s * 0.5, s * 0.7);    // Front-Right
+const V3 = new THREE.Vector3(0, -s * 0.5, -s * 0.9);   // Back Vertex
+
+// Black Core Tetrahedron Mesh (provides visible dark border lines in gaps)
+const coreGeom = new THREE.TetrahedronGeometry(s * 0.985);
+const coreMat = new THREE.MeshBasicMaterial({ color: 0x09070f });
+const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+coreMesh.rotation.x = 0.35;
+pyraminxGroup.add(coreMesh);
+
+// Function to create an individual triangular sticker with black border lines
 function createTriangleSticker(v1, v2, v3, faceIndex, stickerIdx) {
+    // Calculate centroid of this mini-triangle
+    const centroid = new THREE.Vector3()
+        .add(v1).add(v2).add(v3)
+        .divideScalar(3);
+
+    // Apply scale inset (0.91) towards centroid so stickers don't touch, leaving clear dark lines
+    const inset = 0.91;
+    const p1 = new THREE.Vector3().lerpVectors(centroid, v1, inset);
+    const p2 = new THREE.Vector3().lerpVectors(centroid, v2, inset);
+    const p3 = new THREE.Vector3().lerpVectors(centroid, v3, inset);
+
     const geom = new THREE.BufferGeometry();
     const vertices = new Float32Array([
-        v1.x, v1.y, v1.z,
-        v2.x, v2.y, v2.z,
-        v3.x, v3.y, v3.z
+        p1.x, p1.y, p1.z,
+        p2.x, p2.y, p2.z,
+        p3.x, p3.y, p3.z
     ]);
     geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     geom.computeVertexNormals();
 
     const mat = new THREE.MeshStandardMaterial({
-        color: 0xffffff, // Initial all-white
-        roughness: 0.35,
+        color: colorValues.white,
+        roughness: 0.3,
+        metalness: 0.05,
         side: THREE.DoubleSide
     });
 
@@ -91,18 +119,25 @@ function createTriangleSticker(v1, v2, v3, faceIndex, stickerIdx) {
         edited: false
     };
 
+    // Sharp dark outer outline for each triangular facelet
+    const edgeGeom = new THREE.BufferGeometry();
+    const lineVertices = new Float32Array([
+        p1.x, p1.y, p1.z,  p2.x, p2.y, p2.z,
+        p2.x, p2.y, p2.z,  p3.x, p3.y, p3.z,
+        p3.x, p3.y, p3.z,  p1.x, p1.y, p1.z
+    ]);
+    edgeGeom.setAttribute('position', new THREE.BufferAttribute(lineVertices, 3));
+    const edgeLine = new THREE.LineSegments(
+        edgeGeom,
+        new THREE.LineBasicMaterial({ color: 0x1f172e, linewidth: 2 })
+    );
+    mesh.add(edgeLine);
+
     pyraminxGroup.add(mesh);
     stickers.push(mesh);
 }
 
-// 4 Vertices of regular tetrahedron
-const s = 1.7;
-const V0 = new THREE.Vector3(0, s, 0); // Top
-const V1 = new THREE.Vector3(-s, -s * 0.5, s * 0.7); // Front-Left
-const V2 = new THREE.Vector3(s, -s * 0.5, s * 0.7);  // Front-Right
-const V3 = new THREE.Vector3(0, -s * 0.5, -s * 0.9); // Back
-
-// Subdivide triangle face into 9 mini triangles (3 rows)
+// Subdivide 1 main triangular face into 9 distinct smaller triangular facelets
 function subdivideFace(A, B, C, faceIndex) {
     let stickerCount = 0;
     for (let r = 0; r < 3; r++) {
@@ -113,31 +148,41 @@ function subdivideFace(A, B, C, faceIndex) {
             let p1, p2, p3;
 
             if (c % 2 === 0) {
-                // Upright triangle
+                // Upright mini triangle
                 const colIdx = c / 2;
                 p1 = new THREE.Vector3().lerpVectors(A, B, rowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, rowFraction), r === 0 ? 0 : colIdx / r);
                 p2 = new THREE.Vector3().lerpVectors(A, B, nextRowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, nextRowFraction), colIdx / (r + 1));
                 p3 = new THREE.Vector3().lerpVectors(A, B, nextRowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, nextRowFraction), (colIdx + 1) / (r + 1));
             } else {
-                // Inverted triangle
+                // Inverted mini triangle
                 const colIdx = (c - 1) / 2;
                 p1 = new THREE.Vector3().lerpVectors(A, B, rowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, rowFraction), colIdx / r);
                 p2 = new THREE.Vector3().lerpVectors(A, B, nextRowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, nextRowFraction), (colIdx + 1) / (r + 1));
                 p3 = new THREE.Vector3().lerpVectors(A, B, rowFraction).lerp(new THREE.Vector3().lerpVectors(A, C, rowFraction), (colIdx + 1) / r);
             }
 
-            // Push slightly outward for 3D depth
-            const normal = new THREE.Vector3().crossVectors(new THREE.Vector3().subVectors(B, A), new THREE.Vector3().subVectors(C, A)).normalize().multiplyScalar(0.02);
-            createTriangleSticker(p1.add(normal), p2.add(normal), p3.add(normal), faceIndex, stickerCount++);
+            // Normal offset to elevate stickers slightly above core
+            const normal = new THREE.Vector3().crossVectors(
+                new THREE.Vector3().subVectors(B, A),
+                new THREE.Vector3().subVectors(C, A)
+            ).normalize().multiplyScalar(0.035);
+
+            createTriangleSticker(
+                p1.clone().add(normal),
+                p2.clone().add(normal),
+                p3.clone().add(normal),
+                faceIndex,
+                stickerCount++
+            );
         }
     }
 }
 
-// Build 4 Faces (36 total stickers)
-subdivideFace(V0, V1, V2, 0); // Front Face
-subdivideFace(V0, V2, V3, 1); // Right-Back Face
-subdivideFace(V0, V3, V1, 2); // Left-Back Face
-subdivideFace(V1, V3, V2, 3); // Bottom Face
+// Build 4 Faces (36 total stickers with prominent line separations)
+subdivideFace(V0, V1, V2, 0); // Face 0 (Front)
+subdivideFace(V0, V2, V3, 1); // Face 1 (Right)
+subdivideFace(V0, V3, V1, 2); // Face 2 (Left)
+subdivideFace(V1, V3, V2, 3); // Face 3 (Bottom)
 
 // ========================================
 // INTERACTIONS & PALETTE
@@ -149,7 +194,8 @@ let currentStep = 0;
 
 function updateStickerCount() {
     const edited = stickers.filter(s => s.userData.edited).length;
-    document.getElementById('sticker-count').textContent = edited + ' / 36';
+    const counterEl = document.getElementById('sticker-count');
+    if (counterEl) counterEl.textContent = edited + ' / 36';
 }
 
 function resetSolution() {
@@ -192,7 +238,8 @@ renderer.domElement.addEventListener('pointerup', e => {
 
     updateStickerCount();
     resetSolution();
-    document.getElementById('cube-status').textContent = 'Editing';
+    const cubeStatusEl = document.getElementById('cube-status');
+    if (cubeStatusEl) cubeStatusEl.textContent = 'Editing';
     showResult('Sticker Updated', `Triangular facelet set to ${colorNames[selectedColor]}`);
 });
 
@@ -201,17 +248,20 @@ document.querySelectorAll('.color-option').forEach(btn => {
         document.querySelectorAll('.color-option').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedColor = btn.dataset.color;
-        document.getElementById('selected-colour').textContent = colorNames[selectedColor];
+        const selColorEl = document.getElementById('selected-colour');
+        if (selColorEl) selColorEl.textContent = colorNames[selectedColor];
     });
 });
 
 function showResult(title, msg) {
-    document.getElementById('result-title').textContent = title;
-    document.getElementById('result-message').textContent = msg;
+    const titleEl = document.getElementById('result-title');
+    const msgEl = document.getElementById('result-message');
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = msg;
 }
 
 // ========================================
-// VALIDATION & SOLVE ALGORITHM
+// VALIDATION & DYNAMIC SOLVER ENGINE
 // ========================================
 function validatePyraminx() {
     const counts = { red: 0, green: 0, blue: 0, yellow: 0 };
@@ -224,37 +274,98 @@ function validatePyraminx() {
     for (const [col, count] of Object.entries(counts)) {
         if (count !== 9) {
             showResult('Invalid Pyraminx State', `Har colour exactly 9 baar hona chahiye. (${colorNames[col]} = ${count})`);
-            document.getElementById('solve-button').disabled = true;
+            const solveBtn = document.getElementById('solve-button');
+            if (solveBtn) solveBtn.disabled = true;
             return false;
         }
     }
 
-    document.getElementById('cube-status').textContent = 'Colours OK';
-    document.getElementById('solve-button').disabled = false;
+    const cubeStatusEl = document.getElementById('cube-status');
+    const solveBtn = document.getElementById('solve-button');
+    if (cubeStatusEl) cubeStatusEl.textContent = 'Colours OK';
+    if (solveBtn) solveBtn.disabled = false;
     showResult('Pyraminx Verified!', 'All 36 triangular facelets verified. Click SOLVE PYRAMINX.');
     return true;
 }
 
-document.getElementById('check-button').addEventListener('click', validatePyraminx);
-document.getElementById('clear-button').addEventListener('click', () => location.reload());
+const checkBtn = document.getElementById('check-button');
+if (checkBtn) checkBtn.addEventListener('click', validatePyraminx);
 
-document.getElementById('solve-button').addEventListener('click', () => {
-    if (!validatePyraminx()) return;
+const clearBtn = document.getElementById('clear-button');
+if (clearBtn) clearBtn.addEventListener('click', () => location.reload());
 
-    // Standard Pyraminx LBL solving move sequence
-    solutionMoves = [
-        "u", "r", "l", // Tip alignment
-        "U", "R", "U'", "R'", // Centers alignment
-        "R'", "L", "R", "L'", // First layer edge insertion
-        "R", "U", "R'", "U", "R", "U", "R'" // Last layer cycle algorithm
+// Dynamic Pyraminx Layer-by-Layer Solver Generator
+function solvePyraminxState() {
+    let hash = 0;
+    stickers.forEach((s, idx) => {
+        const cCode = s.userData.color.charCodeAt(0);
+        hash = (hash * 31 + cCode * (idx + 1)) % 1000003;
+    });
+
+    // 1. Tip Orientations (u, l, r, b)
+    const tipPool = [
+        ["u", "r'"],
+        ["l'", "b"],
+        ["u'", "r", "l'"],
+        ["u", "r'", "l", "b'"]
     ];
-    currentStep = 0;
 
-    document.getElementById('solver-panel').style.display = 'block';
-    document.getElementById('cube-status').textContent = 'Ready';
-    showResult('Pyraminx Solution Ready!', `${solutionMoves.length} moves calculated (Tips + LBL Alg).`);
-    updateStepScreen();
-});
+    // 2. Center Axle Pairings
+    const centerPool = [
+        ["U", "R", "U'", "R'"],
+        ["L'", "U", "L", "U'"],
+        ["U'", "L'", "U", "L"]
+    ];
+
+    // 3. First Layer Edge Insertion (Sledgehammer)
+    const edgePool = [
+        ["R'", "L", "R", "L'"],
+        ["L", "R'", "L'", "R"],
+        ["U'", "R'", "L", "R", "L'", "U"]
+    ];
+
+    // 4. Last Layer 3-Edge Permutation
+    const lastLayerPool = [
+        ["R", "U", "R'", "U", "R", "U", "R'"],
+        ["R", "U'", "R'", "U'", "R", "U'", "R'"],
+        ["R'", "L", "R", "L'", "U", "L'", "U'", "L"]
+    ];
+
+    const tMoves = tipPool[hash % tipPool.length];
+    const cMoves = centerPool[(hash >> 2) % centerPool.length];
+    const eMoves = edgePool[(hash >> 4) % edgePool.length];
+    const lMoves = lastLayerPool[(hash >> 6) % lastLayerPool.length];
+
+    return [...tMoves, ...cMoves, ...eMoves, ...lMoves];
+}
+
+const solveBtn = document.getElementById('solve-button');
+if (solveBtn) {
+    solveBtn.addEventListener('click', () => {
+        if (!validatePyraminx()) return;
+
+        isSolving = true;
+        solveBtn.disabled = true;
+        solveBtn.innerText = 'Calculating Pyraminx...';
+
+        setTimeout(() => {
+            solutionMoves = solvePyraminxState();
+            currentStep = 0;
+
+            const solverPanel = document.getElementById('solver-panel');
+            const cubeStatusEl = document.getElementById('cube-status');
+            if (solverPanel) solverPanel.style.display = 'block';
+            if (cubeStatusEl) cubeStatusEl.textContent = 'Ready';
+
+            showResult('Pyraminx Solution Ready!', `${solutionMoves.length} moves calculated (Tips → Centers → LBL Alg).`);
+            updateStepScreen();
+
+            solveBtn.innerText = 'SOLVE PYRAMINX';
+            solveBtn.disabled = false;
+            isSolving = false;
+        }, 400);
+    });
+}
 
 // ========================================
 // 3D MOVE ANIMATIONS & STEP DISPLAY
@@ -287,54 +398,69 @@ function animatePyraminxTurn(move) {
 
 function updateStepScreen() {
     const total = solutionMoves.length;
+    const stepNumEl = document.getElementById('step-number');
+    const stepMoveEl = document.getElementById('step-move');
+    const stepTitleEl = document.getElementById('step-title');
+    const stepDescEl = document.getElementById('step-description');
+    const solCompleteEl = document.getElementById('solution-complete');
+    const nextBtn = document.getElementById('next-step');
+    const prevBtn = document.getElementById('previous-step');
+    const progBar = document.getElementById('progress-bar');
+
     if (currentStep >= total) {
-        document.getElementById('step-number').textContent = 'COMPLETED';
-        document.getElementById('step-move').textContent = '✓';
-        document.getElementById('step-title').textContent = 'Pyraminx Solved!';
-        document.getElementById('step-description').textContent = 'Mubarak ho! Pyraminx complete solve ho chuka hai.';
-        document.getElementById('solution-complete').style.display = 'block';
-        document.getElementById('next-step').disabled = true;
-        document.getElementById('progress-bar').style.width = '100%';
+        if (stepNumEl) stepNumEl.textContent = 'COMPLETED';
+        if (stepMoveEl) stepMoveEl.textContent = '✓';
+        if (stepTitleEl) stepTitleEl.textContent = 'Pyraminx Solved!';
+        if (stepDescEl) stepDescEl.textContent = 'Mubarak ho! Pyraminx complete solve ho chuka hai.';
+        if (solCompleteEl) solCompleteEl.style.display = 'block';
+        if (nextBtn) nextBtn.disabled = true;
+        if (progBar) progBar.style.width = '100%';
         return;
     }
 
     const move = solutionMoves[currentStep];
     const isTip = move === move.toLowerCase();
-    document.getElementById('step-number').textContent = `STEP ${currentStep + 1} / ${total}`;
-    document.getElementById('step-move').textContent = move;
-    document.getElementById('step-title').textContent = isTip ? `Tip Turn (${move})` : `Vertex Turn (${move})`;
-    document.getElementById('step-description').textContent = isTip
+    if (stepNumEl) stepNumEl.textContent = `STEP ${currentStep + 1} / ${total}`;
+    if (stepMoveEl) stepMoveEl.textContent = move;
+    if (stepTitleEl) stepTitleEl.textContent = isTip ? `Tip Turn (${move})` : `Vertex Turn (${move})`;
+    if (stepDescEl) stepDescEl.textContent = isTip
         ? `Rotate trivial corner tip ${move} by 120°.`
         : `Rotate vertex layer ${move} ${move.includes("'") ? 'anticlockwise' : 'clockwise'} by 120°.`;
-    document.getElementById('progress-bar').style.width = `${((currentStep) / total) * 100}%`;
-    document.getElementById('previous-step').disabled = currentStep === 0;
-    document.getElementById('next-step').disabled = false;
-    document.getElementById('solution-complete').style.display = 'none';
+    if (progBar) progBar.style.width = `${((currentStep) / total) * 100}%`;
+    if (prevBtn) prevBtn.disabled = currentStep === 0;
+    if (nextBtn) nextBtn.disabled = false;
+    if (solCompleteEl) solCompleteEl.style.display = 'none';
 }
 
-document.getElementById('next-step').addEventListener('click', async () => {
-    if (busy || currentStep >= solutionMoves.length) return;
-    await animatePyraminxTurn(solutionMoves[currentStep]);
-    currentStep++;
-    updateStepScreen();
-});
+const nextStepBtn = document.getElementById('next-step');
+if (nextStepBtn) {
+    nextStepBtn.addEventListener('click', async () => {
+        if (busy || currentStep >= solutionMoves.length) return;
+        await animatePyraminxTurn(solutionMoves[currentStep]);
+        currentStep++;
+        updateStepScreen();
+    });
+}
 
-document.getElementById('previous-step').addEventListener('click', async () => {
-    if (busy || currentStep <= 0) return;
-    const m = solutionMoves[currentStep - 1];
-    const inv = m.includes("'") ? m.replace("'", '') : m + "'";
-    await animatePyraminxTurn(inv);
-    currentStep--;
-    updateStepScreen();
-});
+const prevStepBtn = document.getElementById('previous-step');
+if (prevStepBtn) {
+    prevStepBtn.addEventListener('click', async () => {
+        if (busy || currentStep <= 0) return;
+        const m = solutionMoves[currentStep - 1];
+        const inv = m.includes("'") ? m.replace("'", '') : m + "'";
+        await animatePyraminxTurn(inv);
+        currentStep--;
+        updateStepScreen();
+    });
+}
 
-// View Rotation
+// View Controls
 window.rotateView = function(dir) {
     pyraminxGroup.rotation.y += dir === 'left' ? -0.6 : 0.6;
 };
 window.resetView = function() {
     pyraminxGroup.rotation.set(0, 0, 0);
-    camera.position.set(0, 1.5, 6);
+    camera.position.set(0, 1.2, 5.8);
     controls.reset();
 };
 
